@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
-const DbConfigBuilder = require('./src/utils/db-config-builder');
+const { MongoConfigBuilder } = require('./src/config/mongo-config-builder');
 
 // Load .env.test
 try {
@@ -17,8 +17,8 @@ try {
   console.error('Error loading .env.test file:', error);
 }
 
-// Build MongoDB URI using DbConfigBuilder
-const uri = DbConfigBuilder.buildConnectionString();
+// Replace DbConfigBuilder usage
+const uri = MongoConfigBuilder.buildConnectionString();
 
 console.log('MongoDB URI:', uri);
 

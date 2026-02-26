@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const DbConfigBuilder = require('./src/utils/db-config-builder');
+const { MongoConfigBuilder } = require('./src/config/mongo-config-builder');
 
-const uri = DbConfigBuilder.buildConnectionString();
+const uri = MongoConfigBuilder.buildConnectionString();
 
 async function testConnection() {
   try {

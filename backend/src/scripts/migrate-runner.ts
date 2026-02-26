@@ -1,11 +1,11 @@
 import { loadConfig } from '../common/utils/config-builder';
 import { Sequelize } from 'sequelize';
 import { Umzug, SequelizeStorage } from 'umzug';
-import { DbConfigBuilder } from '../utils/db-config-builder';
+import { MongoConfigBuilder } from '../config/mongo-config-builder';
 
 (async () => {
   const config = await loadConfig();
-  const mongoUri = DbConfigBuilder.buildConnectionString();
+  const mongoUri = MongoConfigBuilder.buildConnectionString();
 
   const sequelize = new Sequelize(mongoUri, {
     dialect: 'mysql', // Replace with the correct dialect for MongoDB if needed

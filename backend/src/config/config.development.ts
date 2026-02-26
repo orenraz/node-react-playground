@@ -1,4 +1,4 @@
-import DbConfigBuilder from '../utils/db-config-builder';
+import { MongoConfigBuilder } from '../config/mongo-config-builder';
 
 interface DevConfig {
   port: number;
@@ -16,7 +16,7 @@ const devConfig: () => DevConfig = () => ({
   allowedOrigins: '',
   logLevel: 'debug',
   mongodb: {
-    uri: DbConfigBuilder.buildConnectionString(),
+    uri: MongoConfigBuilder.buildConnectionString(),
     dbName: process.env.MONGODB_DB_NAME,
   },
   MONGODB_PROTOCOL: process.env.MONGODB_PROTOCOL,
