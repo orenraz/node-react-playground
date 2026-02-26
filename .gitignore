@@ -1,0 +1,12 @@
+node_modules/
+package-lock.json
+package.json
+node_modules/
+dist/
+.env
+.expo/
+*.log
+
+# Web app build output
+web/dist/
+web/.env

@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "declaration": false,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2022",
+    "sourceMap": true,
+    "outDir": "dist",
+    "incremental": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "types": ["node", "@types/jest"],
+    "isolatedModules": true,
+    "allowJs": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*",
+    "src/config/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}
