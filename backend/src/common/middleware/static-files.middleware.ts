@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { join } from 'path';
 import * as express from 'express';
-import { WinstonLogger } from '../logger';
+import { WinstonLogger } from '../services/logger';
 
 export function configureStaticFiles(app: INestApplication, logger: WinstonLogger) {
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));

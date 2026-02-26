@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import logger from '../common/logger';
+import logger from '../common/services/logger';
 import dotenv from 'dotenv';
 
 // Load environment-specific .env file

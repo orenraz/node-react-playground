@@ -2,31 +2,18 @@ import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import 'ts-node/register'; // Ensure ts-node is registered for TypeScript files
+import { MongoConfigBuilder } from './mongo-config-builder';
 
-export function buildMongoUri(): string {
-  const protocol = process.env.MONGODB_PROTOCOL;
-  const user = process.env.MONGODB_USER;
-  const password = process.env.MONGODB_PASSWORD;
-  const host = process.env.MONGODB_HOST;
-  const dbName = process.env.MONGODB_DB_NAME;
-  const options = process.env.MONGODB_OPTIONS;
-
-  console.log('Environment variables for MongoDB URI:', {
-    protocol,
-    user,
-    password,
-    host,
-    dbName,
-    options,
-  });
-
-  if (!protocol || !user || !password || !host || !dbName) {
-    throw new Error('Missing required MongoDB configuration values');
-  }
-
-  const sanitizedOptions = options?.replace(/useNewUrlParser|useUnifiedTopology/g, '') || '';
-  return `${protocol}://${user}:${password}@${host}/${dbName}?${sanitizedOptions}`;
-}
+// Create a centralized constants file for environment variable keys
+export const ENV_KEYS = {
+  MONGODB_PROTOCOL: 'MONGODB_PROTOCOL',
+  MONGODB_USER: 'MONGODB_USER',
+  MONGODB_PASSWORD: 'MONGODB_PASSWORD',
+  MONGODB_HOST: 'MONGODB_HOST',
+  MONGODB_DB_NAME: 'MONGODB_DB_NAME',
+  MONGODB_OPTIONS: 'MONGODB_OPTIONS',
+  TEST_TIMEOUT: 'TEST_TIMEOUT',
+};
 
 export async function loadConfig() {
   const env = process.env.NODE_ENV?.trim() || 'development';
@@ -39,4 +26,14 @@ export async function loadConfig() {
   if (!fs.existsSync(envFilePath)) {
     console.error('Environment file does not exist:', envFilePath);
   }
+
+  const config = {
+    mongodb: {
+      uri: MongoConfigBuilder.buildConnectionString(),
+      dbName: process.env.MONGODB_DB_NAME || '',
+    },
+    TEST_TIMEOUT: process.env.TEST_TIMEOUT ? parseInt(process.env.TEST_TIMEOUT, 10) : 30000,
+  };
+
+  return config;
 }

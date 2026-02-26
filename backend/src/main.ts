@@ -1,11 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import helmet from 'helmet';
-import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WinstonLogger } from './common/services/logger';
-import { join } from 'path';
-import * as express from 'express';
 import 'reflect-metadata';
 console.log('Reflect-metadata loaded at runtime');
 console.log('Reflect object:', Reflect);

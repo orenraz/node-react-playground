@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import helmet from 'helmet';
-import { WinstonLogger } from '../logger';
+import { WinstonLogger } from '../services/logger';
 
 export function configureSecurityHeaders(app: INestApplication, logger: WinstonLogger) {
   app.use(

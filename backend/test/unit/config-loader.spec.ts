@@ -1,4 +1,4 @@
-import { loadConfig } from '../../src/config/config-builder';
+import { loadConfig } from '../../src/config/loaders/config-builder';
 
 describe('Configuration Loader', () => {
   it('should load the correct configuration for the current environment', () => {

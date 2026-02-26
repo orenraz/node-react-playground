@@ -1,0 +1,25 @@
+import dotenv from 'dotenv';
+import { MongoConfigBuilder } from './loaders/mongo-config-builder';
+
+dotenv.config();
+
+const baseConfig = {
+  port: parseInt(process.env.PORT || '3000', 10),
+  allowedOrigins: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:4000'],
+  logLevel: process.env.LOG_LEVEL || 'info',
+  TEST_TIMEOUT: process.env.TEST_TIMEOUT ? parseInt(process.env.TEST_TIMEOUT, 10) : 30000,
+};
+
+const mongodbConfig = {
+  mongodb: {
+    uri: MongoConfigBuilder.buildConnectionString(),
+    dbName: process.env.MONGODB_DB_NAME,
+  },
+};
+
+const config = {
+  ...baseConfig,
+  ...mongodbConfig,
+};
+
+export default config;

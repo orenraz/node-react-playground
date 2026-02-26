@@ -7,21 +7,14 @@ import { Connection } from 'mongoose';
 import { Logger } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { loadConfig } from '../src/config/config-builder';
+import { loadConfig } from '../src/config/loaders/config-builder';
+import config from '../src/config/config';
 
 // Remove the envFilePath property as .env files are no longer used
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 console.log('Current working directory:', process.cwd());
 (async () => {
-  const config = await loadConfig();
-
-  if (config.error) {
-    console.error('Error loading .env file:', config.error);
-  } else {
-    console.log('.env file loaded successfully:', config);
-  }
-
   jest.setTimeout(config.TEST_TIMEOUT || 30000); // Use timeout from config or default to 30 seconds
 
   describe('Database Connection', () => {

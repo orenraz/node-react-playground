@@ -1,4 +1,4 @@
-import { loadConfig } from '../src/config/config-builder';
+import { loadConfig } from '../src/config/loaders/config-builder';
 
 process.env.NODE_ENV = 'test'; // Explicitly set NODE_ENV to test
 
