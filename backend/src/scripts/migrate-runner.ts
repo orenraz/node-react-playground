@@ -1,4 +1,4 @@
-import { loadConfig } from '../common/utils/config-builder';
+import { loadConfig } from '../config/config-builder';
 import { Sequelize } from 'sequelize';
 import { Umzug, SequelizeStorage } from 'umzug';
 import { MongoConfigBuilder } from '../config/mongo-config-builder';

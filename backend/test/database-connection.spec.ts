@@ -7,7 +7,7 @@ import { Connection } from 'mongoose';
 import { Logger } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { loadConfig } from '../src/common/utils/config-builder';
+import { loadConfig } from '../src/config/config-builder';
 
 // Remove the envFilePath property as .env files are no longer used
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });

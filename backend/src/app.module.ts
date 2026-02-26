@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { validationSchema } from './config/schema';
-import { loadConfig } from './common/utils/config-builder';
+import { loadConfig } from './config/config-builder';
 import { UserModule } from './modules/user/user.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { GreetController } from './modules/greet/greet.controller';

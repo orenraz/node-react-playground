@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigService, ConfigModule } from '@nestjs/config';
-import { loadConfig } from '../../common/utils/config-builder';
+import { loadConfig } from '../../config/config-builder';
 
 // Extract MongoDB configuration logic into a separate function for clarity
 function getMongoConfig(configService: ConfigService) {
