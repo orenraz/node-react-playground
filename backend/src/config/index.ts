@@ -39,17 +39,6 @@ function constructMongoDbUri(env) {
   return `${env.MONGODB_PROTOCOL}://${env.MONGODB_USER}:${env.MONGODB_PASSWORD}@${env.MONGODB_HOST}/${env.MONGODB_DB_NAME}${options}`;
 }
 
-// Replace inline URI construction with a call to the helper service
-const validatedEnvWithUri = {
-  ...validatedEnv,
-  MONGODB_URI: constructMongoDbUri(validatedEnv),
-};
-
-logger.debug('Validated Configuration with URI:', validatedEnvWithUri);
-
-// Log all validated configuration parameters
-logger.debug('Validated Configuration:', validatedEnv);
-
 // Use validated environment variables
 const config = {
   env: validatedEnv.NODE_ENV,
@@ -95,10 +84,5 @@ export const sequelizeConfig = {
   test: config.database,
   production: config.database,
 };
-
-// Replace inline URI construction with a call to the helper service
-function buildMongoUriService(env) {
-  return constructMongoDbUri(env);
-}
 
 export default config;
