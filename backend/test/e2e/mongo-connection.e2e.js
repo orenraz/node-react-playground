@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
-const { MongoConfigBuilder } = require('./src/config/mongo-config-builder');
+const dotenv = require('dotenv');
+const path = require('path');
+const { MongoConfigBuilder } = require('../../src/config/mongo-config-builder');
+
+dotenv.config();
 
 const uri = MongoConfigBuilder.buildConnectionString();
 
-async function testConnection() {
+async function testMongoConnection() {
   try {
     console.log('Connecting to MongoDB...');
     await mongoose.connect(uri);
@@ -16,4 +20,4 @@ async function testConnection() {
   }
 }
 
-testConnection();
+testMongoConnection();
