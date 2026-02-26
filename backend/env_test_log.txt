@@ -4,7 +4,6 @@ File: .dockerignore, Path: C:\Dev\node-react-playground\backend\.dockerignore
 File: .env.development, Path: C:\Dev\node-react-playground\backend\.env.development
 File: .env.production, Path: C:\Dev\node-react-playground\backend\.env.production
 File: .env.test, Path: C:\Dev\node-react-playground\backend\.env.test
-File: config, Path: C:\Dev\node-react-playground\backend\config
 File: dist, Path: C:\Dev\node-react-playground\backend\dist
 File: Dockerfile, Path: C:\Dev\node-react-playground\backend\Dockerfile
 File: env_test_log.txt, Path: C:\Dev\node-react-playground\backend\env_test_log.txt
@@ -15,10 +14,7 @@ File: node_modules, Path: C:\Dev\node-react-playground\backend\node_modules
 File: package-lock.json, Path: C:\Dev\node-react-playground\backend\package-lock.json
 File: package.json, Path: C:\Dev\node-react-playground\backend\package.json
 File: public, Path: C:\Dev\node-react-playground\backend\public
-File: seeders, Path: C:\Dev\node-react-playground\backend\seeders
 File: src, Path: C:\Dev\node-react-playground\backend\src
 File: test, Path: C:\Dev\node-react-playground\backend\test
 File: test-load-config.js, Path: C:\Dev\node-react-playground\backend\test-load-config.js
-File: test-mongo-connection.js, Path: C:\Dev\node-react-playground\backend\test-mongo-connection.js
 File: tsconfig.json, Path: C:\Dev\node-react-playground\backend\tsconfig.json
-File: verifyMongoConnection.js, Path: C:\Dev\node-react-playground\backend\verifyMongoConnection.js
