@@ -1,27 +1,34 @@
 require('dotenv').config();
 
+const validateEnv = (key) => {
+  if (!process.env[key]) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+  return process.env[key];
+};
+
 module.exports = {
   development: {
-    username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || null,
-    database: process.env.DB_NAME || 'development_db',
-    host: process.env.DB_HOST || '127.0.0.1',
+    username: validateEnv('DB_USER'),
+    password: validateEnv('DB_PASSWORD'),
+    database: validateEnv('DB_NAME'),
+    host: validateEnv('DB_HOST'),
     dialect: 'mysql',
     logging: console.log,
   },
   test: {
-    username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || null,
-    database: process.env.DB_NAME || 'test_db',
-    host: process.env.DB_HOST || '127.0.0.1',
+    username: validateEnv('DB_USER'),
+    password: validateEnv('DB_PASSWORD'),
+    database: validateEnv('DB_NAME'),
+    host: validateEnv('DB_HOST'),
     dialect: 'mysql',
     logging: false,
   },
   production: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
+    username: validateEnv('DB_USER'),
+    password: validateEnv('DB_PASSWORD'),
+    database: validateEnv('DB_NAME'),
+    host: validateEnv('DB_HOST'),
     dialect: 'mysql',
     logging: false,
     pool: {
