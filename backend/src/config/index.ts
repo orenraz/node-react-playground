@@ -61,3 +61,7 @@ export const sequelizeConfig = {
 export type { MongoDBConfig };
 
 export default config;
+
+export { default as development } from './environments/config.development';
+export { default as test } from './environments/config.test';
+export { default as production } from './environments/config.production';
