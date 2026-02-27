@@ -16,6 +16,26 @@
       "args": ["--workspace", "mobile", "run", "android"],
       "group": "build",
       "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Start Backend (start:dev)",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "start:dev"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Debug Backend",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "debug"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
     }
   ]
 }

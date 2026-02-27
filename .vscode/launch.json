@@ -2,13 +2,28 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Backend (dev:debug)",
+      "name": "Launch Backend (start:dev)",
       "type": "pwa-node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev:debug"],
-      "port": 9229,
+      "runtimeArgs": ["run", "start:dev"],
       "cwd": "${workspaceFolder}/backend",
+      "env": {
+        "PORT": "3030"
+      },
+      "console": "integratedTerminal",
+      "autoAttachChildProcesses": true
+    },
+    {
+      "name": "Debug Backend",
+      "type": "pwa-node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "debug"],
+      "cwd": "${workspaceFolder}/backend",
+      "env": {
+        "PORT": "3030"
+      },
       "console": "integratedTerminal",
       "autoAttachChildProcesses": true
     },
@@ -30,16 +45,6 @@
       "address": "localhost",
       "localRoot": "${workspaceFolder}/backend",
       "remoteRoot": null
-    },
-    {
-      "name": "Run Backend (start:dev)",
-      "type": "pwa-node",
-      "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start:dev"],
-      "cwd": "${workspaceFolder}/backend",
-      "console": "integratedTerminal",
-      "autoAttachChildProcesses": true
     }
   ],
   "compounds": [
