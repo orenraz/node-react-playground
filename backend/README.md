@@ -95,10 +95,6 @@ This project is licensed under the MIT License.
 
 Fix Compilation Errors
 
-
-Expand validation schemas in env-schema.ts to include stricter rules for all environment variables.
-Improve Error Handling
-
 Standardize error handling across the application using global exception filters.
 Increase Test Coverage
 

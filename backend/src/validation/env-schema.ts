@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import mongoSchema from '../modules/database/validation/mongo-schema';
 
 const envSchema = Joi.object({
   NODE_ENV: Joi.string()
@@ -24,17 +25,12 @@ const envSchema = Joi.object({
     .required()
     .error(() => new Error('LOG_LEVEL must be one of: debug, info, warn, error.')),
 
-  MONGODB_URI: Joi.string()
-    .uri()
-    .required()
-    .error(() => new Error('MONGODB_URI must be a valid MongoDB connection string.')),
-
   TEST_TIMEOUT: Joi.number()
     .integer()
     .min(1000)
     .max(60000)
     .optional()
     .error(() => new Error('TEST_TIMEOUT must be a number between 1000 and 60000 milliseconds.')),
-});
+}).concat(mongoSchema);
 
 export default envSchema;
