@@ -1,8 +1,9 @@
 import dotenv from 'dotenv';
 import { MongoConfigBuilder } from './loaders/mongo-config-builder';
 import { validateEnvVars } from '../utils/validate-env';
+import { getMongoConfig } from './loaders/config-builder';
 
-dotenv.config();
+dotenv.config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
 
 const baseConfig = {
   port: parseInt(process.env.PORT || '3000', 10),
@@ -11,11 +12,9 @@ const baseConfig = {
   TEST_TIMEOUT: process.env.TEST_TIMEOUT ? parseInt(process.env.TEST_TIMEOUT, 10) : 30000,
 };
 
+// Decouple MongoConfigBuilder from envVars
 const mongodbConfig = {
-  mongodb: {
-    uri: MongoConfigBuilder.buildConnectionString(),
-    dbName: process.env.MONGODB_DB_NAME,
-  },
+  mongodb: getMongoConfig(),
 };
 
 const config = {
@@ -34,5 +33,10 @@ export const envVars = {
   host: process.env.MONGODB_HOST,
   dbName: process.env.MONGODB_DB_NAME,
 };
+
+// Debug log to verify envVars initialization
+console.log('Exporting envVars:', envVars);
+
+console.log('Loaded environment variables:', envVars);
 
 export default config;

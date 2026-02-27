@@ -15,6 +15,20 @@ export const ENV_KEYS = {
   TEST_TIMEOUT: 'TEST_TIMEOUT',
 };
 
+// Centralized function for MongoDB configuration
+export function getMongoConfig() {
+  return {
+    uri: MongoConfigBuilder.buildConnectionString({
+      protocol: process.env.MONGODB_PROTOCOL,
+      user: process.env.MONGODB_USER,
+      password: process.env.MONGODB_PASSWORD,
+      host: process.env.MONGODB_HOST,
+      dbName: process.env.MONGODB_DB_NAME,
+    }),
+    dbName: process.env.MONGODB_DB_NAME || '',
+  };
+}
+
 export async function loadConfig() {
   const env = process.env.NODE_ENV?.trim() || 'development';
 
@@ -27,11 +41,9 @@ export async function loadConfig() {
     console.error('Environment file does not exist:', envFilePath);
   }
 
+  // Refactor to use centralized MongoDB configuration
   const config = {
-    mongodb: {
-      uri: MongoConfigBuilder.buildConnectionString(),
-      dbName: process.env.MONGODB_DB_NAME || '',
-    },
+    mongodb: getMongoConfig(),
     TEST_TIMEOUT: process.env.TEST_TIMEOUT ? parseInt(process.env.TEST_TIMEOUT, 10) : 30000,
   };
 
