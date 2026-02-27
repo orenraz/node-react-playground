@@ -12,11 +12,15 @@ import { configureSecurityHeaders } from './common/middleware/security-headers.m
 import { configureRateLimiting } from './common/middleware/rate-limiting.middleware';
 import { configureValidationPipe } from './common/pipes/validation.pipe';
 import { configureCors } from './common/middleware/cors.middleware';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {  });
   const logger = new WinstonLogger();
   app.useLogger(logger);
+
+  app.useGlobalFilters(new GlobalExceptionFilter());
+  logger.log('Global exception filter applied.');
 
   logger.log('Initializing application...');
 
