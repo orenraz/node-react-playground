@@ -15,6 +15,7 @@ const baseConfig = {
   port: validatedEnv.PORT,
   allowedOrigins: validatedEnv.ALLOWED_ORIGINS.split(','),
   logLevel: validatedEnv.LOG_LEVEL,
+  TEST_TIMEOUT: validatedEnv.TEST_TIMEOUT || 30000, // Add default timeout
 };
 
 const mongodbConfig = {
