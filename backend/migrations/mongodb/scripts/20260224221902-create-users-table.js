@@ -37,11 +37,4 @@ module.exports = {
       });
     }
   },
-
-  async down (queryInterface, Sequelize) {
-    const tableExists = await queryInterface.describeTable('users').catch(() => false);
-    if (tableExists) {
-      await queryInterface.dropTable('users');
-    }
-  }
 };

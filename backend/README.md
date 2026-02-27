@@ -95,15 +95,18 @@ This project is licensed under the MIT License.
 
 Fix Compilation Errors
 
-Standardize error handling across the application using global exception filters.
+Optimize database queries and ensure indexes are used.
+
 Increase Test Coverage
 
 Add tests for edge cases in database-connection.spec.ts and other critical modules.
+
 Optimize Performance
 
 Implement caching for frequently accessed data.
-Optimize database queries and ensure indexes are used.
+
 Enhance Deployment Readiness
 
 Improve CI/CD pipelines to include security scanning and deployment workflows.
+
 Optimize the Dockerfile for smaller image size.
