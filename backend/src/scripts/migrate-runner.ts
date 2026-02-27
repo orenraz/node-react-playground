@@ -1,8 +1,7 @@
 import config from '../config/config';
 import { Sequelize } from 'sequelize';
 import { Umzug, SequelizeStorage } from 'umzug';
-import { MongoConfigBuilder } from '../config/loaders/mongo-config-builder';
-import { MongoDBConfig } from '../config';
+import { MongoDBConfig } from '../types/mongodb-config';
 
 (async () => {
   const mongoUri = (config.mongodb as MongoDBConfig).uri;
