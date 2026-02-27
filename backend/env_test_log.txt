@@ -4,6 +4,7 @@ File: .dockerignore, Path: C:\Dev\node-react-playground\backend\.dockerignore
 File: .env.development, Path: C:\Dev\node-react-playground\backend\.env.development
 File: .env.production, Path: C:\Dev\node-react-playground\backend\.env.production
 File: .env.test, Path: C:\Dev\node-react-playground\backend\.env.test
+File: .gitignore, Path: C:\Dev\node-react-playground\backend\.gitignore
 File: dist, Path: C:\Dev\node-react-playground\backend\dist
 File: Dockerfile, Path: C:\Dev\node-react-playground\backend\Dockerfile
 File: env_test_log.txt, Path: C:\Dev\node-react-playground\backend\env_test_log.txt

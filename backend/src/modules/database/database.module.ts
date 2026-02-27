@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigService } from '@nestjs/config';
+import { validateSchema } from '../../utils/validate-env';
+import { mongoSchema } from './index';
 
 @Module({
   imports: [
@@ -12,14 +14,10 @@ import { ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const protocol = configService.get<string>('MONGODB_PROTOCOL');
-        const user = configService.get<string>('MONGODB_USER');
-        const password = configService.get<string>('MONGODB_PASSWORD');
-        const host = configService.get<string>('MONGODB_HOST');
-        const dbName = configService.get<string>('MONGODB_DB_NAME');
-        const options = configService.get<string>('MONGODB_OPTIONS');
+        const validatedMongoConfig = validateSchema(mongoSchema);
+        const { MONGODB_PROTOCOL, MONGODB_USER, MONGODB_PASSWORD, MONGODB_HOST, MONGODB_DB_NAME } = validatedMongoConfig;
 
-        const uri = `${protocol}://${user}:${password}@${host}/${dbName}?${options}`;
+        const uri = `${MONGODB_PROTOCOL}://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DB_NAME}`;
         return { uri };
       },
     }),

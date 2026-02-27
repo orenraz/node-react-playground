@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import appConfig from './config/config';
-import { validationSchema } from './config/schemas/schema';
+import envSchema from './validation/env-schema';
 import { loadConfig } from './config/loaders/config-builder';
 import { UserModule } from './modules/user/user.module';
 import { DatabaseModule } from './modules/database/database.module';
@@ -31,7 +31,7 @@ let config: any;
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `${__dirname}/../.env.${process.env.NODE_ENV || 'development'}`,
-      validationSchema,
+      validationSchema: envSchema,
       load: [() => appConfig],
     }),
     UserModule, // Add UserModule to imports

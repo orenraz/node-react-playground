@@ -2,9 +2,10 @@ import config from '../config/config';
 import { Sequelize } from 'sequelize';
 import { Umzug, SequelizeStorage } from 'umzug';
 import { MongoConfigBuilder } from '../config/loaders/mongo-config-builder';
+import { MongoDBConfig } from '../config';
 
 (async () => {
-  const mongoUri = config.mongodb.uri;
+  const mongoUri = (config.mongodb as MongoDBConfig).uri;
 
   const sequelize = new Sequelize(mongoUri, {
     dialect: 'mysql', // Replace with the correct dialect for MongoDB if needed

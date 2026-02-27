@@ -1,4 +1,4 @@
-import Joi from 'joi';
+import envSchema from './schemas/env-schema';
 import logger from '../common/services/logger';
 import dotenv from 'dotenv';
 
@@ -6,28 +6,8 @@ import dotenv from 'dotenv';
 const env = process.env.NODE_ENV || 'development';
 dotenv.config({ path: `.env.${env}` });
 
-// Consolidate validation schema
-const validationSchema = Joi.object({
-  NODE_ENV: Joi.string()
-    .valid('development', 'production', 'test')
-    .required()
-    .error((errors) => {
-      logger.error('Validation error for NODE_ENV:', errors);
-      throw new Error('Invalid NODE_ENV value.');
-    }),
-  PORT: Joi.number().required(),
-  ALLOWED_ORIGINS: Joi.string().allow('').optional(),
-  LOG_LEVEL: Joi.string().required(),
-  MONGODB_USER: Joi.string().required(),
-  MONGODB_PASSWORD: Joi.string().required(),
-  MONGODB_HOST: Joi.string().required(),
-  MONGODB_DB_NAME: Joi.string().required(),
-  MONGODB_PROTOCOL: Joi.string().required(),
-  MONGODB_OPTIONS: Joi.string().optional(),
-});
-
 // Validate environment variables
-const { error, value: validatedEnv } = validationSchema.validate(process.env, { allowUnknown: true });
+const { error, value: validatedEnv } = envSchema.validate(process.env, { allowUnknown: true });
 if (error) {
   logger.error('Environment validation failed:', error);
   throw new Error('Invalid environment configuration.');
@@ -39,8 +19,24 @@ function constructMongoDbUri(env) {
   return `${env.MONGODB_PROTOCOL}://${env.MONGODB_USER}:${env.MONGODB_PASSWORD}@${env.MONGODB_HOST}/${env.MONGODB_DB_NAME}${options}`;
 }
 
+// Define an explicit TypeScript interface for the `mongodb` configuration object
+interface MongoDBConfig {
+  protocol: string;
+  user: string;
+  password: string;
+  host: string;
+  dbName: string;
+  uri: string;
+}
+
 // Use validated environment variables
-const config = {
+const config: {
+  env: string;
+  port: number;
+  allowedOrigins: string[];
+  logLevel: string;
+  mongodb: MongoDBConfig;
+} = {
   env: validatedEnv.NODE_ENV,
   port: parseInt(validatedEnv.PORT, 10),
   allowedOrigins: validatedEnv.ALLOWED_ORIGINS?.split(',') || [],
@@ -51,38 +47,17 @@ const config = {
     password: validatedEnv.MONGODB_PASSWORD,
     host: validatedEnv.MONGODB_HOST,
     dbName: validatedEnv.MONGODB_DB_NAME,
-    options: validatedEnv.MONGODB_OPTIONS, // Added options
-  },
-  database: {
-    development: {
-      username: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || null,
-      database: process.env.DB_NAME || 'development_db',
-      host: process.env.DB_HOST || '127.0.0.1',
-      dialect: 'mysql',
-    },
-    test: {
-      username: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || null,
-      database: process.env.DB_NAME || 'test_db',
-      host: process.env.DB_HOST || '127.0.0.1',
-      dialect: 'mysql',
-    },
-    production: {
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      host: process.env.DB_HOST,
-      dialect: 'mysql',
-    },
+    uri: constructMongoDbUri(validatedEnv),
   },
 };
 
 // Export Sequelize configuration
 export const sequelizeConfig = {
-  development: config.database,
-  test: config.database,
-  production: config.database,
+  development: config.mongodb,
+  test: config.mongodb,
+  production: config.mongodb,
 };
+
+export type { MongoDBConfig };
 
 export default config;
