@@ -5,16 +5,6 @@
  */
 
 /**
- * @typedef {Object} GreetRequest
- * @property {string} name - Name to greet
- */
-
-/**
- * @typedef {Object} GreetResponse
- * @property {string} message - Greeting message
- */
-
-/**
  * @typedef {Object} HelloResponse
  * @property {string} app - Application name
  * @property {string} version - Application version
@@ -104,17 +94,5 @@ export class ApiClient {
    */
   async getHealth() {
     return this.request('/health');
-  }
-
-  /**
-   * Send greeting request
-   * @param {GreetRequest} data
-   * @returns {Promise<GreetResponse>}
-   */
-  async greet(data) {
-    return this.request('/greet', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
   }
 }

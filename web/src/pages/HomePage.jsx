@@ -1,5 +1,4 @@
 import HelloDisplay from '../components/home/HelloDisplay';
-import GreetForm from '../components/home/GreetForm';
 import HealthCheck from '../components/home/HealthCheck';
 import config from '../config';
 import '../styles/home.css';
@@ -16,7 +15,6 @@ export default function HomePage() {
       <div className="demo-section">
         <h2>API Demo</h2>
         <HelloDisplay backendUrl={config.backendUrl} />
-        <GreetForm backendUrl={config.backendUrl} />
         <HealthCheck backendUrl={config.backendUrl} />
         <Link to="/users">Go to Users Page</Link>
       </div>

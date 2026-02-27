@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "Launch Backend (start:dev)",
-      "type": "pwa-node",
+      "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "start:dev"],
@@ -16,7 +16,7 @@
     },
     {
       "name": "Debug Backend",
-      "type": "pwa-node",
+      "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "debug"],
