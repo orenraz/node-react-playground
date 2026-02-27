@@ -1,4 +1,4 @@
-import envSchema from './schemas/env-schema';
+import envSchema from '../validation/env-schema';
 import logger from '../common/services/logger';
 import dotenv from 'dotenv';
 

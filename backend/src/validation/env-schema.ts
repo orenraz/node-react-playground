@@ -3,10 +3,13 @@ import Joi from 'joi';
 const envSchema = Joi.object({
   NODE_ENV: Joi.string()
     .valid('development', 'production', 'test')
-    .default('development'),
-  PORT: Joi.number().default(3000),
-  LOG_LEVEL: Joi.string().default('info'),
-  ALLOWED_ORIGINS: Joi.string().default('*'),
+    .required()
+    .error((errors) => {
+      throw new Error('Invalid NODE_ENV value.');
+    }),
+  PORT: Joi.number().required(),
+  ALLOWED_ORIGINS: Joi.string().allow('').optional(),
+  LOG_LEVEL: Joi.string().required(),
 });
 
 export default envSchema;
