@@ -57,4 +57,20 @@ module.exports = {
       console.log(`Collection ${collectionName} already exists.`);
     }
   },
+  async down() {
+    const collectionName = 'users';
+    const db = mongoose.connection.db;
+
+    console.log(`Checking if collection exists: ${collectionName}`);
+    const collections = await db.listCollections().toArray();
+    const collectionExists = collections.some(collection => collection.name === collectionName);
+
+    if (collectionExists) {
+      console.log(`Dropping collection: ${collectionName}`);
+      await db.collection(collectionName).drop();
+      console.log(`Collection ${collectionName} dropped successfully.`);
+    } else {
+      console.log(`Collection ${collectionName} does not exist. Skipping drop.`);
+    }
+  }
 };
