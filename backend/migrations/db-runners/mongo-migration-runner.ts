@@ -10,13 +10,20 @@ import { Umzug, MongoDBStorage } from 'umzug';
 dotenv.config({ path: path.resolve(__dirname, '../../.env.development') });
 
 const MONGO_URI = config.mongodb.uri;
-const DATABASE_NAME = 'your_database_name'; // Replace with your database name
+const DATABASE_NAME = config.mongodb.dbName; // Dynamically fetch the database name from the environment-specific config
 const MIGRATIONS_COLLECTION = 'migrations';
 
+console.log(`Using MongoDB connection string: ${MONGO_URI}`);
+
 (async () => {
+  console.log('Connecting to MongoDB...');
   const client = new MongoClient(MONGO_URI);
   await client.connect();
   const db = client.db(DATABASE_NAME);
+
+  console.log('Listing all collections in the database...');
+  const collections = await db.listCollections().toArray();
+  console.log('Collections:', collections.map(c => c.name));
 
   const umzug = new Umzug({
     migrations: {
@@ -28,6 +35,9 @@ const MIGRATIONS_COLLECTION = 'migrations';
     }),
     logger: console,
   });
+
+  const pendingMigrations = await umzug.pending();
+  console.log('Pending Migrations:', pendingMigrations);
 
   try {
     console.log('Running migrations...');
