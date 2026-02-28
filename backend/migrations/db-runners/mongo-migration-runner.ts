@@ -46,7 +46,9 @@ console.log(`Using MongoDB connection string: ${MONGO_URI}`);
   console.log('Migration files detected by glob:', migrationFiles);
 
   const migrationDefs = migrationFiles.map((filePath: string) => {
-    const name = path.basename(filePath);
+    // Use a stable migration name without file extension so storage keys match
+    // what Umzug expects and avoid mismatches between runs.
+    const name = path.basename(filePath, path.extname(filePath));
     return {
       name,
       path: filePath,
