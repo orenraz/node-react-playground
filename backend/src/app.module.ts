@@ -1,43 +1,28 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import appConfig from './config/config';
-import envSchema from './validation/env-schema';
-import { loadConfig } from './config/loaders/config-builder';
-import { UserModule } from './modules/user/user.module';
-import { DatabaseModule } from './modules/database/database.module';
-import { InfoController } from './modules/info/info.controller';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UserController } from './modules/user/user.controller';
-import { UserService } from './modules/user/user.service';
-import { Logger } from '@nestjs/common';
-
-const logger = new Logger('AppModule');
-logger.debug(`NODE_ENV at startup: ${process.env.NODE_ENV}`);
-logger.debug(`Attempting to load configuration for environment: ${process.env.NODE_ENV || 'development'}`);
-
-let config: any;
-(async () => {
-  config = await loadConfig();
-  process.env.NODE_ENV = process.env.NODE_ENV?.trim(); 
-  logger.debug(`Loaded configuration: ${JSON.stringify(config)}`);
-  const envFilePath = `${__dirname}/../.env.${config?.NODE_ENV || 'development'}`;
-  logger.debug(`Resolved envFilePath: ${envFilePath}`);
-  logger.debug(`NODE_ENV value: ${process.env.NODE_ENV}`);
-})();
+import config from '@src/config/config';
+import envSchema from '@src/validation/env-schema';
+import { UserModule } from '@src/modules/user/user.module';
+import { DatabaseModule } from '@src/modules/database/database.module';
+import { InfoController } from '@src/modules/info/info.controller';
+import { AppController } from '@src/app.controller';
+import { AppService } from '@src/app.service';
+import { UserController } from '@src/modules/user/user.controller';
+import { UserService } from '@src/modules/user/user.service';
+import { getEnvFilePath } from '@src/utils/env-file-path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `${__dirname}/../.env.${process.env.NODE_ENV || 'development'}`,
+      envFilePath: getEnvFilePath(),
       validationSchema: envSchema,
-      load: [() => appConfig],
+      load: [() => config], // Ensure this is a plain object
     }),
-    UserModule, // Add UserModule to imports
-    DatabaseModule, // Add DatabaseModule to imports
+    UserModule,
+    DatabaseModule,
   ],
   controllers: [InfoController, AppController, UserController],
-  providers: [AppService, UserService], 
+  providers: [AppService, UserService],
 })
 export class AppModule {}

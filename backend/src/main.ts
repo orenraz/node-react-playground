@@ -1,18 +1,23 @@
+import 'tsconfig-paths/register';
+
+// Ensure this is the first import to enable path alias resolution
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from '@src/app.module';
 import { ConfigService } from '@nestjs/config';
-import { WinstonLogger } from './common/services/logger';
+import { WinstonLogger } from '@src/common/services/logger';
 import 'reflect-metadata';
-console.log('Reflect-metadata loaded at runtime');
-console.log('Reflect object:', Reflect);
+import path from 'path';
+
+console.log('Tracing @root alias resolution in debug mode:');
+console.log('Resolved @root to:', path.resolve('@root'));
 
 // TODO: check if i should refactor and exatract some of the setup logic to separate files for better organization and testability
-import { configureStaticFiles } from './common/middleware/static-files.middleware';
-import { configureSecurityHeaders } from './common/middleware/security-headers.middleware';
-import { configureRateLimiting } from './common/middleware/rate-limiting.middleware';
-import { configureValidationPipe } from './common/pipes/validation.pipe';
-import { configureCors } from './common/middleware/cors.middleware';
-import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { configureStaticFiles } from '@src/common/middleware/static-files.middleware';
+import { configureSecurityHeaders } from '@src/common/middleware/security-headers.middleware';
+import { configureRateLimiting } from '@src/common/middleware/rate-limiting.middleware';
+import { configureValidationPipe } from '@src/common/pipes/validation.pipe';
+import { configureCors } from '@src/common/middleware/cors.middleware';
+import { GlobalExceptionFilter } from '@src/common/filters/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {  });

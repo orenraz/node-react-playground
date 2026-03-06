@@ -10,3 +10,5 @@ dist/
 # Web app build output
 web/dist/
 web/.env
+# Ignore compiled test JS outputs
+backend/test/*.js

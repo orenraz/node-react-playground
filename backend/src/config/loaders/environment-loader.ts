@@ -1,0 +1,33 @@
+import path from 'path';
+import fs from 'fs';
+import dotenv from 'dotenv';
+import { Logger } from '@nestjs/common';
+import { getEnvFilePath } from '../../utils/env-file-path';
+
+// Refactor `EnvironmentConfigBuilder` to use a constructor for building the configuration
+export class EnvironmentConfigBuilder {
+  public env: string;
+  public port: string | undefined;
+  public allowedOrigins: string[];
+  public logLevel: string | undefined;
+  public testTimeout: number;
+
+  constructor() {
+    this.env = process.env.NODE_ENV?.trim() || 'development';
+
+    // Dynamically resolve .env file path
+    const envFilePath = getEnvFilePath();
+    Logger.debug(`Resolved environment file path: ${envFilePath}`);
+    if (fs.existsSync(envFilePath)) {
+      dotenv.config({ path: envFilePath });
+    } else {
+      Logger.error(`Environment file not found: ${envFilePath}`);
+      throw new Error(`Environment file not found: ${envFilePath}`);
+    }
+
+    this.port = process.env.PORT;
+    this.allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',');
+    this.logLevel = process.env.LOG_LEVEL;
+    this.testTimeout = parseInt(process.env.TEST_TIMEOUT || '30000', 10);
+  }
+}

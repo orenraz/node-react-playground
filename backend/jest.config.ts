@@ -9,7 +9,12 @@ const config: Config.InitialOptions = {
   collectCoverageFrom: ['src/**/*.ts'],
   testPathIgnorePatterns: ['<rootDir>/src'],
   testTimeout: 10000, 
-  setupFiles: ['<rootDir>/test/setup-env.ts'],
+  globalSetup: '<rootDir>/test/setup/globalSetup.ts',
+  globalTeardown: '<rootDir>/test/setup/globalTeardown.ts',
+  setupFilesAfterEnv: ['./test/setup/jest.setup.ts'],
+  moduleNameMapper: {
+    '^src/(.*)$': '<rootDir>/src/$1',
+  },
 };
 
 globalThis.process.env.NODE_ENV = 'test'; // Ensure NODE_ENV is set globally for Jest

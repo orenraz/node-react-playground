@@ -18,7 +18,9 @@
     "allowJs": true,
     "baseUrl": "./",
     "paths": {
-      "*": ["src/*"]
+      "@root/*": ["./*"],
+      "@src/*": ["src/*"],
+      "@test/*": ["test/*"]
     }
   },
   "include": [
@@ -28,7 +30,6 @@
     "src/utils/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "test"
+    "node_modules"
   ]
 }

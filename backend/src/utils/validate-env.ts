@@ -1,3 +1,5 @@
+// TODO: rename or maybe split into 2 files for env var validation and schema validation?
+
 import Joi from 'joi';
 
 export function validateEnvVars(requiredVars: string[]) {
@@ -7,8 +9,8 @@ export function validateEnvVars(requiredVars: string[]) {
   }
 }
 
-export function validateSchema(schema: Joi.ObjectSchema) {
-  const { error, value } = schema.validate(process.env, { allowUnknown: true });
+export function validateSchema(schema: Joi.ObjectSchema, obj: Record<string, any>): Record<string, any> {
+  const { error, value } = schema.validate(obj, { allowUnknown: true });
   if (error) {
     throw new Error(`Joi validation error: ${error.message}`);
   }

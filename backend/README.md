@@ -93,7 +93,7 @@ This project is licensed under the MIT License.
 
 ## TODOS 
 
-Fix Compilation Errors
+tsconfig - add alias
 
 Optimize database queries and ensure indexes are used.
 
