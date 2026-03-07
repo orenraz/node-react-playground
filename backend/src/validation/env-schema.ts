@@ -1,34 +1,33 @@
 import Joi from 'joi';
 
 const envSchema = Joi.object({
-  nodeEnv: Joi.string()
+  NODE_ENV: Joi.string()
     .valid('development', 'production', 'test')
     .required()
-    .error(() => new Error('nodeEnv must be one of: development, production, test.')),
+    .error(() => new Error('NODE_ENV must be one of: development, production, test.')),
 
-  port: Joi.number()
+  PORT: Joi.number()
     .integer()
     .min(1024)
     .max(65535)
     .required()
-    .error(() => new Error('port must be a number between 1024 and 65535.')),
+    .error(() => new Error('PORT must be a number between 1024 and 65535.')),
 
-  allowedOrigins: Joi.array()
-    .items(Joi.string().pattern(/^(http|https):\/\/.+/))
-    .optional()
-    .error(() => new Error('allowedOrigins must be a list of valid URLs.')),
+  ALLOWED_ORIGINS: Joi.string()
+    .required()
+    .error(() => new Error('ALLOWED_ORIGINS must be a comma-separated list of valid URLs.')),
 
-  logLevel: Joi.string()
+  LOG_LEVEL: Joi.string()
     .valid('debug', 'info', 'warn', 'error')
     .required()
-    .error(() => new Error('logLevel must be one of: debug, info, warn, error.')),
+    .error(() => new Error('LOG_LEVEL must be one of: debug, info, warn, error.')),
 
-  testTimeout: Joi.number()
+  TEST_TIMEOUT: Joi.number()
     .integer()
     .min(1000)
     .max(60000)
     .optional()
-    .error(() => new Error('testTimeout must be a number between 1000 and 60000 milliseconds.')),
+    .error(() => new Error('TEST_TIMEOUT must be a number between 1000 and 60000 milliseconds.')),
 });
 
 export default envSchema;

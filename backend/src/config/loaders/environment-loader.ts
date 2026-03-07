@@ -3,18 +3,16 @@ import dotenv from 'dotenv';
 import { Logger } from '@nestjs/common';
 import { getEnvFilePath } from '../../utils/env-file-path';
 
-// Refactor `EnvironmentConfigBuilder` to use a constructor for building the configuration
 export class EnvironmentConfigBuilder {
-  public nodeEnv: string;
-  public port: string | undefined;
-  public allowedOrigins: string[];
-  public logLevel: string | undefined;
-  public testTimeout: number;
+  public NODE_ENV: string;
+  public PORT: string | undefined;
+  public ALLOWED_ORIGINS: string;
+  public LOG_LEVEL: string | undefined;
+  public TEST_TIMEOUT: number;
 
   constructor() {
-    this.nodeEnv = process.env.NODE_ENV?.trim() || 'development';
+    this.NODE_ENV = process.env.NODE_ENV?.trim() || 'development';
 
-    // Dynamically resolve .env file path
     const envFilePath = getEnvFilePath();
     Logger.debug(`Resolved environment file path: ${envFilePath}`);
     if (fs.existsSync(envFilePath)) {
@@ -26,10 +24,10 @@ export class EnvironmentConfigBuilder {
       throw new Error(`Environment file not found: ${envFilePath}`);
     }
 
-    this.nodeEnv = process.env.NODE_ENV?.trim();
-    this.port = process.env.PORT;
-    this.allowedOrigins = (process.env.ALLOWED_ORIGINS).split(',');
-    this.logLevel = process.env.LOG_LEVEL;
-    this.testTimeout = parseInt(process.env.TEST_TIMEOUT, 10);
+    this.NODE_ENV = process.env.NODE_ENV?.trim();
+    this.PORT = process.env.PORT;
+    this.ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS;
+    this.LOG_LEVEL = process.env.LOG_LEVEL;
+    this.TEST_TIMEOUT = parseInt(process.env.TEST_TIMEOUT, 10);
   }
 }

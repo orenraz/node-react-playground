@@ -31,7 +31,7 @@ class Config {
   public getConfig() {
     return {
       ...this.envConfig,
-      mongodb: this.mongoConfig,
+      mongodb: { ...this.mongoConfig },
     };
   }
 }

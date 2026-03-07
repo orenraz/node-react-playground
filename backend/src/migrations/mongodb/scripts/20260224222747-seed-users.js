@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 
 module.exports = {
-  async up() {
+  async up(db) {
     const users = [
       {
         userId: '1',
@@ -26,7 +26,6 @@ module.exports = {
     ];
 
     const collectionName = 'users';
-    const db = mongoose.connection.db;
 
     console.log(`Seeding data into collection: ${collectionName}`);
 
@@ -43,9 +42,8 @@ module.exports = {
     console.log('Seed data inserted successfully.');
   },
 
-  async down() {
+  async down(db) {
     const collectionName = 'users';
-    const db = mongoose.connection.db;
 
     console.log(`Reverting seed data from collection: ${collectionName}`);
     await db.collection(collectionName).deleteMany({});

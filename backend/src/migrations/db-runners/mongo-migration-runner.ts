@@ -6,13 +6,15 @@ import { runMigrations } from './common/runner/runMigrations';
 async function main() {
   console.log('Starting MongoDB migration runner...');
 
-  loadConfig();
+  const config = loadConfig();
+  console.log('Loaded configuration:', config);
+
 
   const { client, db } = await connectToMongoDB();
 
   const umzug = await setupMigrations(db);
   await runMigrations(umzug);
-  
+
   await client.close();
 
   console.log('MongoDB connection closed.');

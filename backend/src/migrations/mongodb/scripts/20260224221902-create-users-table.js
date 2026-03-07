@@ -3,10 +3,8 @@
 const mongoose = require('mongoose');
 
 module.exports = {
-  async up() {
+  async up(db) {
     const collectionName = 'users';
-    const db = mongoose.connection.db;
-
     const collections = await db.listCollections().toArray();
     const collectionExists = collections.some(collection => collection.name === collectionName);
 
@@ -57,10 +55,8 @@ module.exports = {
       console.log(`Collection ${collectionName} already exists.`);
     }
   },
-  async down() {
+  async down(db) {
     const collectionName = 'users';
-    const db = mongoose.connection.db;
-
     console.log(`Checking if collection exists: ${collectionName}`);
     const collections = await db.listCollections().toArray();
     const collectionExists = collections.some(collection => collection.name === collectionName);

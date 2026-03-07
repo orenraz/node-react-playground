@@ -10,8 +10,8 @@ import config from '../../config/config';
     }),
     MongooseModule.forRootAsync({
       useFactory: () => {
-        const { uri } = config.mongodb;
-        return { uri };
+        const { URI } = config.mongodb;
+        return { uri: URI };
       },
     }),
   ],

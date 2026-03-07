@@ -1,29 +1,27 @@
-import { Logger } from '@nestjs/common';
 
-// Refactor `MongoConfigBuilder` to use a constructor for building the configuration
 export class MongoConfigLoader {
-  public uri: string;
-  public dbName: string;
-  public protocol: string;
-  public user: string;
-  public password: string;
-  public host: string;
-  public options: string | undefined;
+  public URI: string;
+  public DB_NAME: string;
+  public PROTOCOL: string;
+  public USER: string;
+  public PASSWORD: string;
+  public HOST: string;
+  public OPTIONS: string | undefined;
 
   constructor() {
-    this.protocol = process.env.MONGODB_PROTOCOL;
-    this.user = process.env.MONGODB_USER;
-    this.password = process.env.MONGODB_PASSWORD;
-    this.host = process.env.MONGODB_HOST;
-    this.dbName = process.env.MONGODB_DB_NAME;
-    this.options = process.env.MONGODB_OPTIONS;
+    this.PROTOCOL = process.env.MONGODB_PROTOCOL;
+    this.USER = process.env.MONGODB_USER;
+    this.PASSWORD = process.env.MONGODB_PASSWORD;
+    this.HOST = process.env.MONGODB_HOST;
+    this.DB_NAME = process.env.MONGODB_DB_NAME;
+    this.OPTIONS = process.env.MONGODB_OPTIONS;
 
-    this.uri = MongoConfigLoader.buildConnectionString({
-      protocol: this.protocol,
-      user: this.user,
-      password: this.password,
-      host: this.host,
-      dbName: this.dbName,
+    this.URI = MongoConfigLoader.buildConnectionString({
+      protocol: this.PROTOCOL,
+      user: this.USER,
+      password: this.PASSWORD,
+      host: this.HOST,
+      dbName: this.DB_NAME,
     });
   }
 

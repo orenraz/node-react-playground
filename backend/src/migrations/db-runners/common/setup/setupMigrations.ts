@@ -13,7 +13,7 @@ export async function setupMigrations(db: any) {
     console.log(`Migrations collection already exists: ${MIGRATIONS_COLLECTION}`);
   }
 
-  const migrationScriptsPath = path.join(__dirname, '../mongodb/scripts/*.js');
+  const migrationScriptsPath = path.resolve(process.cwd(), 'src/migrations/mongodb/scripts/*.js');
   console.log('Migration scripts folder path:', migrationScriptsPath);
   const migrationFiles = glob.sync(migrationScriptsPath);
   console.log('Migration files detected by glob:', migrationFiles);
@@ -23,16 +23,19 @@ export async function setupMigrations(db: any) {
     return {
       name,
       path: filePath,
-      up: async () => {
+      up: async (context: any) => {
+        // Umzug may pass context as { context: db } or just db
+        const db = context && context.constructor && context.constructor.name === 'Db' ? context : context.context;
         const mod = require(filePath);
         if (mod && typeof mod.up === 'function') {
-          return mod.up();
+          return mod.up(db);
         }
       },
-      down: async () => {
+      down: async (context: any) => {
+        const db = context && context.constructor && context.constructor.name === 'Db' ? context : context.context;
         const mod = require(filePath);
         if (mod && typeof mod.down === 'function') {
-          return mod.down();
+          return mod.down(db);
         }
       },
     };
