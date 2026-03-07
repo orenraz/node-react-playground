@@ -1,19 +1,16 @@
-import { loadConfig } from '../config/loadConfig';
-import { connectToMongoDB, connectMongoose, disconnectMongoose } from '../database/connectToMongoDB';
-import { setupMigrations } from '../setup/setupMigrations';
-import { runMigrations } from '../runner/runMigrations';
+import { loadConfig } from './common/config/loadConfig';
+import { connectToMongoDB } from './mongo/database/connectToMongoDB';
+import { setupMigrations } from './common/setup/setupMigrations';
+import { runMigrations } from './common/runner/runMigrations';
 
 async function main() {
   loadConfig();
 
   const { client, db } = await connectToMongoDB();
 
-  await connectMongoose();
-
   const umzug = await setupMigrations(db);
   await runMigrations(umzug);
 
-  await disconnectMongoose();
   await client.close();
   console.log('MongoDB connection closed.');
 }

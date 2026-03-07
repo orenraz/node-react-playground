@@ -20,6 +20,8 @@ export class EnvironmentConfigBuilder {
     Logger.debug(`Resolved environment file path: ${envFilePath}`);
     if (fs.existsSync(envFilePath)) {
       dotenv.config({ path: envFilePath });
+      console.log(`Loaded environment file: ${envFilePath}`);
+      console.log('Loaded Environment Variables:', process.env);
     } else {
       Logger.error(`Environment file not found: ${envFilePath}`);
       throw new Error(`Environment file not found: ${envFilePath}`);
