@@ -1,5 +1,4 @@
 export * from './database.module';
-import mongoSchema from './validation/mongo-schema';
+import mongoDbSchema from '../../validation/mongo-db-schema';
 
-// Correcting the export for mongoSchema
-export { default as mongoSchema } from './validation/mongo-schema';
+export { default as mongoDbSchema } from '../../validation/mongo-db-schema';

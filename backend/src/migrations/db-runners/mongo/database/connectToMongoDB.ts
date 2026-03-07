@@ -1,8 +1,9 @@
 import { MongoClient } from 'mongodb';
 import logger from '@src/common/services/logger';
-import config from '@src/config/config';
+import Config from '@src/config/config';
 
 export async function connectToMongoDB() {
+  const config = Config; // Access the singleton instance
   const MONGO_URI = config.mongodb.uri;
   const DATABASE_NAME = config.mongodb.dbName;
 

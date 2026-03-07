@@ -1,35 +1,35 @@
 import Joi from 'joi';
 
 const mongoDbSchema = Joi.object({
-  MONGODB_PROTOCOL: Joi.string()
+  protocol: Joi.string()
     .valid('mongodb', 'mongodb+srv')
     .required()
-    .error(() => new Error('MONGODB_PROTOCOL must be either mongodb or mongodb+srv.')),
+    .error(() => new Error('protocol must be either mongodb or mongodb+srv.')),
 
-  MONGODB_USER: Joi.string()
+  user: Joi.string()
     .required()
-    .error(() => new Error('MONGODB_USER is required.')),
+    .error(() => new Error('user is required.')),
 
-  MONGODB_PASSWORD: Joi.string()
+  password: Joi.string()
     .required()
-    .error(() => new Error('MONGODB_PASSWORD is required.')),
+    .error(() => new Error('password is required.')),
 
-  MONGODB_HOST: Joi.string()
+  host: Joi.string()
     .required()
-    .error(() => new Error('MONGODB_HOST is required.')),
+    .error(() => new Error('host is required.')),
 
-  MONGODB_DB_NAME: Joi.string()
+  dbName: Joi.string()
     .required()
-    .error(() => new Error('MONGODB_DB_NAME is required.')),
+    .error(() => new Error('dbName is required.')),
 
-  MONGODB_OPTIONS: Joi.string()
+  options: Joi.string()
     .optional()
-    .error(() => new Error('MONGODB_OPTIONS must be a valid string.')),
+    .error(() => new Error('options must be a valid string.')),
 
-  URI: Joi.string()
+  uri: Joi.string()
     .uri()
     .required()
-    .error(() => new Error('URI must be a valid MongoDB connection string.')),
+    .error(() => new Error('uri must be a valid MongoDB connection string.')),
 });
 
 export default mongoDbSchema;

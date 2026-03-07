@@ -4,14 +4,17 @@ import { setupMigrations } from './common/setup/setupMigrations';
 import { runMigrations } from './common/runner/runMigrations';
 
 async function main() {
+  console.log('Starting MongoDB migration runner...');
+
   loadConfig();
 
   const { client, db } = await connectToMongoDB();
 
   const umzug = await setupMigrations(db);
   await runMigrations(umzug);
-
+  
   await client.close();
+
   console.log('MongoDB connection closed.');
 }
 

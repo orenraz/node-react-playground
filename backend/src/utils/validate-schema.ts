@@ -19,6 +19,7 @@ export function validateSchema(schema: Joi.ObjectSchema, obj: Record<string, any
   }
 
   console.log('Object being validated:', obj);
+  console.log('Schema being used:', schema.describe());
 
   const { error, value } = schema.validate(obj, { allowUnknown: true });
   if (error) {
