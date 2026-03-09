@@ -1,62 +1,48 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from '../database/schemas/user.schema';
+import { User } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UserRepository } from './repositories/user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-  ) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
-      const newUser = new this.userModel(createUserDto);
-      const savedUser = await newUser.save();
-      return savedUser.toObject({ getters: true }); // Ensure _id is included in the returned object
+      return await this.userRepository.create(createUserDto);
     } catch (error) {
-      console.error('Error creating user:', error); // Log the full error stack
+      console.error('Error creating user:', error);
       if (error.code === 11000) {
-        throw new Error('Duplicate userId detected'); // Handle duplicate key error
+        throw new Error('Duplicate userId detected');
       }
-      throw new Error(`Failed to create user: ${error.message}`); // Log other errors
+      throw new Error(`Failed to create user: ${error.message}`);
     }
   }
 
   async findAll(): Promise<User[]> {
-    return this.userModel.find().exec();
+    return this.userRepository.findAll();
   }
 
   async findOne(id: string): Promise<User> {
     console.log('Querying user with _id:', id);
-    const user = await this.userModel.findById(id).exec();
+    const user = await this.userRepository.findById(id);
     console.log('Query result:', user);
-    return user.toObject({ getters: true }); // Ensure _id is included in the returned object
+    return user;
   }
 
   async update(id: string, updateUserDto: Partial<User>): Promise<User> {
-    console.log(`Querying user with _id: ${id}`); // Log the _id being queried
-    console.log(`Update payload:`, updateUserDto); // Log the update payload
-
-    const result = await this.userModel
-      .updateOne({ _id: id }, { $set: updateUserDto })
-      .exec();
-
-    console.log(`MongoDB update result:`, result); // Log the MongoDB update result
-
-    const updatedUser = await this.userModel.findById(id).exec(); // Fetch the updated user
-
+    console.log(`Querying user with _id: ${id}`);
+    console.log(`Update payload:`, updateUserDto);
+    const updatedUser = await this.userRepository.update(id, updateUserDto);
     if (!updatedUser) {
-      console.error(`User with _id: ${id} not found`); // Log if the user is not found
-      throw new Error(`User with id ${id} not found`); // Throw an error for missing user
+      console.error(`User with _id: ${id} not found`);
+      throw new Error(`User with id ${id} not found`);
     }
-
-    console.log(`User updated successfully:`, updatedUser); // Log the updated user
+    console.log(`User updated successfully:`, updatedUser);
     return updatedUser;
   }
 
   async delete(id: string): Promise<User> {
-    return this.userModel.findByIdAndDelete(id).exec();
+    return this.userRepository.delete(id);
   }
 }

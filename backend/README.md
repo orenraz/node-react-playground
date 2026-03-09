@@ -93,6 +93,8 @@ This project is licensed under the MIT License.
 
 ## TODOS 
 
+create a repo layer
+
 tsconfig - add alias
 
 Optimize database queries and ensure indexes are used.
