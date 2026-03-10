@@ -9,11 +9,11 @@ const config: Config.InitialOptions = {
   collectCoverageFrom: ['src/**/*.ts'],
   testPathIgnorePatterns: ['<rootDir>/src'],
   testTimeout: 10000, 
-  globalSetup: '<rootDir>/test/setup/globalSetup.ts',
-  globalTeardown: '<rootDir>/test/setup/globalTeardown.ts',
+  // globalSetup: '<rootDir>/test/setup/globalSetup.ts',
+  // globalTeardown: '<rootDir>/test/setup/globalTeardown.ts',
   setupFilesAfterEnv: ['./test/setup/jest.setup.ts'],
   moduleNameMapper: {
-    '^src/(.*)$': '<rootDir>/src/$1',
+    '^@src/(.*)$': '<rootDir>/src/$1',
   },
 };
 

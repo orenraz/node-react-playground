@@ -1,7 +1,7 @@
-import { BaseTest } from '../../setup/common/BaseTest';
+import { BaseUnitTest } from '../../common/BaseUnitTest';
 import Joi from 'joi';
 
-class EnvSchemaValidationTest extends BaseTest {
+class EnvSchemaValidationTest extends BaseUnitTest {
   async setup() {
     // Setup logic if needed
   }
