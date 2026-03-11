@@ -1,4 +1,6 @@
+import { Config } from '@src/config/config';
 
-import { loadConfig } from '@test/config/config-loader';
+export const e2EConfig1 = () => Config.create().getConfig();
 
-export const e2eConfig = () => ({ ...loadConfig() });
+// Extend config here if needed
+// export const e2eConfig = () => ({ ...loadE2EConfig(), customE2EProperty: 'value' });

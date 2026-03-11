@@ -93,7 +93,7 @@ This project is licensed under the MIT License.
 
 ## TODOS 
 
-create a repo layer
+use DI - use NestJS dependency
 
 tsconfig - add alias
 

@@ -1,31 +1,33 @@
-import envSchema from '@src/validation/env-schema';
-import { validateSchema } from '@src/utils/validate-schema';
-import mongoDbSchema from '@src/validation/mongo-db-schema';
-import { MongoConfigLoader } from '@src/config/loaders/mongo-config-loader';
-import { EnvironmentConfigBuilder } from '@src/config/loaders/environment-loader';
+import { EnvironmentConfigBuilder } from '../config/loaders/environment-loader';
+import { MongoConfigLoader } from '../config/loaders/mongo-config-loader';
+import { validateSchema } from '../utils/validate-schema';
+import envSchema from '../validation/env-schema';
+import mongoDbSchema from '../validation/mongo-db-schema';
+import { EnvironmentConfigOverrides } from '../config/types/environment-config-overrides';
+import { MongoConfigOverrides } from '../config/types/mongo-config-overrides';
 
-class Config {
-  private static instance: Config;
+export class Config {
   public readonly envConfig: EnvironmentConfigBuilder;
   public readonly mongoConfig: MongoConfigLoader;
 
-  private constructor() {
-    // Initialize and validate environment configuration
-    this.envConfig = new EnvironmentConfigBuilder();
-    console.log('Environment Configuration:', this.envConfig);
+  private constructor(
+    envOverrides: EnvironmentConfigOverrides = {},
+    mongoOverrides: MongoConfigOverrides = {},
+    envFilePath?: string
+  ) {
+    this.envConfig = new EnvironmentConfigBuilder(envOverrides, envFilePath);
     validateSchema(envSchema, this.envConfig);
 
-    // Initialize and validate MongoDB configuration
-    this.mongoConfig = new MongoConfigLoader();
-    console.log('MongoDB Configuration:', this.mongoConfig);
+    this.mongoConfig = new MongoConfigLoader(mongoOverrides);
     validateSchema(mongoDbSchema, this.mongoConfig);
   }
 
-  public static getInstance(): Config {
-    if (!Config.instance) {
-      Config.instance = new Config();
-    }
-    return Config.instance;
+  public static create(
+    envOverrides: EnvironmentConfigOverrides = {},
+    mongoOverrides: MongoConfigOverrides = {},
+    envFilePath?: string
+  ): Config {
+    return new Config(envOverrides, mongoOverrides, envFilePath);
   }
 
   public getConfig() {
@@ -36,4 +38,5 @@ class Config {
   }
 }
 
-export default Config.getInstance().getConfig();
+// Default export for app compatibility
+export default Config.create().getConfig();

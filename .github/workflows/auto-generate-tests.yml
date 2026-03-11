@@ -1,0 +1,30 @@
+name: Auto Generate Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  generate-tests:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Copilot Agent
+        run: |
+          echo "Running Unit Test Agent"
+
+          gh copilot run \
+            --agent unit-test \
+            --prompt "Analyze the PR changes and generate missing unit tests for the modified code."

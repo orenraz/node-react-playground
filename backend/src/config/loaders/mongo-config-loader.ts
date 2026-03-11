@@ -1,4 +1,6 @@
 
+import { MongoConfigOverrides } from '@src/config/types/mongo-config-overrides';  
+
 export class MongoConfigLoader {
   public URI: string;
   public DB_NAME: string;
@@ -8,13 +10,13 @@ export class MongoConfigLoader {
   public HOST: string;
   public OPTIONS: string | undefined;
 
-  constructor() {
-    this.PROTOCOL = process.env.MONGODB_PROTOCOL;
-    this.USER = process.env.MONGODB_USER;
-    this.PASSWORD = process.env.MONGODB_PASSWORD;
-    this.HOST = process.env.MONGODB_HOST;
-    this.DB_NAME = process.env.MONGODB_DB_NAME;
-    this.OPTIONS = process.env.MONGODB_OPTIONS;
+  constructor(overrides: MongoConfigOverrides = {}) {
+    this.PROTOCOL = overrides.PROTOCOL ?? process.env.MONGODB_PROTOCOL;
+    this.USER = overrides.USER ?? process.env.MONGODB_USER;
+    this.PASSWORD = overrides.PASSWORD ?? process.env.MONGODB_PASSWORD;
+    this.HOST = overrides.HOST ?? process.env.MONGODB_HOST;
+    this.DB_NAME = overrides.DB_NAME ?? process.env.MONGODB_DB_NAME;
+    this.OPTIONS = overrides.OPTIONS ?? process.env.MONGODB_OPTIONS;
 
     this.URI = MongoConfigLoader.buildConnectionString({
       protocol: this.PROTOCOL,
@@ -22,17 +24,19 @@ export class MongoConfigLoader {
       password: this.PASSWORD,
       host: this.HOST,
       dbName: this.DB_NAME,
+      options: this.OPTIONS,
     });
   }
 
-  static buildConnectionString({ protocol, user, password, host, dbName }: {
+  static buildConnectionString({ protocol, user, password, host, dbName, options }: {
     protocol: string;
     user: string;
     password: string;
     host: string;
     dbName: string;
+    options?: string;
   }): string {
-    const sanitizedOptions = process.env.MONGODB_OPTIONS?.replace(/useNewUrlParser|useUnifiedTopology/g, '') || '';
+    const sanitizedOptions = options?.replace(/useNewUrlParser|useUnifiedTopology/g, '') || '';
     return `${protocol}://${user}:${password}@${host}/${dbName}?${sanitizedOptions}`;
   }
 }

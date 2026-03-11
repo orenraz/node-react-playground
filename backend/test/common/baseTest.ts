@@ -1,7 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '@src/app.module';
-import { loadConfig } from '../config/config-loader';
 
 export class BaseTest {
   module?: TestingModule = undefined;
@@ -68,7 +67,14 @@ export class BaseTest {
   // Private config loader
   private loadConfigIfNeeded() {
     if (!this.config) {
-      this.config = loadConfig();
+      const testType = process.env.TEST_TYPE;
+      if (testType === 'e2e') {
+        this.config = require('../e2e/config/e2e-config').e2eConfig();
+      } else if (testType === 'unit') {
+        this.config = require('../unit/config/unit-config').unitConfig();
+      } else {
+        throw new Error('Config missing or TEST_TYPE not recognized. Set TEST_TYPE=unit or TEST_TYPE=e2e in your test script.');
+      }
     }
   }
 
