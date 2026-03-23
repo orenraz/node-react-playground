@@ -9,13 +9,7 @@ export class UserController {
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     const newUser = await this.userService.create(createUserDto);
-    return {
-      userId: newUser.userId,
-      firstName: newUser.firstName,
-      lastName: newUser.lastName,
-      gender: newUser.gender,
-      age: newUser.age || createUserDto.age,
-    };
+    return newUser;
   }
 
   @Get()
@@ -23,20 +17,23 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
+
+  @Get(':userId')
+  findOne(@Param('userId') userId: string) {
+    return this.userService.findOne(userId);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: any) {
+
+  @Put(':userId')
+  update(@Param('userId') userId: string, @Body() updateUserDto: any) {
     console.log(`Received request body:`, updateUserDto); // Log the entire request body
-    return this.userService.update(id, updateUserDto);
+    return this.userService.update(userId, updateUserDto);
   }
 
-  @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.userService.delete(id);
+
+  @Delete(':userId')
+  delete(@Param('userId') userId: string) {
+    return this.userService.delete(userId);
   }
 }
 

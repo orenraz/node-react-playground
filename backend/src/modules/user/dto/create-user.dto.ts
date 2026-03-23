@@ -1,9 +1,8 @@
-import { IsString, IsNotEmpty, IsInt, Min, Max } from 'class-validator';
+import { IsString, IsNotEmpty, IsInt, Min, Max, IsEnum } from 'class-validator';
+import { Gender } from '@src/modules/user/enums/gender.enum';
+
 
 export class CreateUserDto {
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
 
   @IsString()
   @IsNotEmpty()
@@ -13,9 +12,8 @@ export class CreateUserDto {
   @IsNotEmpty()
   lastName: string;
 
-  @IsString()
-  @IsNotEmpty()
-  gender: string;
+  @IsEnum(Gender)
+  gender: Gender;
 
   @IsInt()
   @Min(0)

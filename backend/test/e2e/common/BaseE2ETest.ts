@@ -1,16 +1,15 @@
-import BaseTest from '@root/test/common/baseTest';
-import { connectTestDb, disconnectTestDb } from '../shared/db-utils';
+import BaseTest from '@test/common/baseTest';
+import mongoose from 'mongoose';
 
 export class BaseE2ETest extends BaseTest {
-
   public async beforeAll() {
     await super.beforeAll();
-    await connectTestDb(this.config?.MONGODB_URI);
+    await mongoose.connect(this.config?.mongodb?.URI);
   }
 
   public async afterAll() {
     await super.afterAll();
-    await disconnectTestDb();
+    await mongoose.disconnect();
   }
 
   public async beforeEach() {
@@ -21,7 +20,7 @@ export class BaseE2ETest extends BaseTest {
     super.afterEach();
   }
 
-  public getApp() {
+  get app() {
     return this.getApp();
   }
 }

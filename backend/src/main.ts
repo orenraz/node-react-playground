@@ -8,6 +8,10 @@ import { WinstonLogger } from '@src/common/services/logger';
 import 'reflect-metadata';
 import path from 'path';
 
+console.log('--- DEBUG ALIAS RESOLUTION ---');
+console.log('process.cwd():', process.cwd());
+console.log('__dirname:', __dirname);
+console.log('process.argv:', process.argv);
 console.log('Tracing @root alias resolution in debug mode:');
 console.log('Resolved @root to:', path.resolve('@root'));
 

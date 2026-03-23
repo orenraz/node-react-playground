@@ -5,7 +5,7 @@ export type UserDocument = User & Document;
 
 @Schema({ collection: 'users', timestamps: true })
 export class User {
-  @Prop({ required: true, unique: true })
+  @Prop({ unique: true })
   userId: string;
 
   @Prop({ required: true })

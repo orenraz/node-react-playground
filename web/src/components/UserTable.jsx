@@ -21,7 +21,6 @@ const UserTable = () => {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
-    userId: '',
     firstName: '',
     lastName: '',
     gender: '',
@@ -167,14 +166,7 @@ const UserTable = () => {
             Create User
           </Typography>
           {error && <Alert severity="error">{error}</Alert>}
-          <TextField
-            fullWidth
-            margin="normal"
-            label="User ID"
-            name="userId"
-            value={formData.userId}
-            onChange={handleInputChange}
-          />
+
           <TextField
             fullWidth
             margin="normal"
@@ -237,14 +229,7 @@ const UserTable = () => {
             Update User
           </Typography>
           {error && <Alert severity="error">{error}</Alert>}
-          <TextField
-            fullWidth
-            margin="normal"
-            label="User ID"
-            name="userId"
-            value={updateData.userId || ''}
-            onChange={handleUpdateChange}
-          />
+
           <TextField
             fullWidth
             margin="normal"

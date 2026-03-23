@@ -11,20 +11,22 @@ export class UserRepository {
     return this.userModel.find().exec();
   }
 
-  async findById(id: string): Promise<User | null> {
-    return this.userModel.findById(id).exec();
-  }
 
   async create(user: Partial<User>): Promise<User> {
     const createdUser = new this.userModel(user);
     return createdUser.save();
   }
 
-  async update(id: string, user: Partial<User>): Promise<User | null> {
-    return this.userModel.findByIdAndUpdate(id, user, { new: true }).exec();
+
+  async findByUserId(userId: string): Promise<User | null> {
+    return this.userModel.findOne({ userId }).exec();
   }
 
-  async delete(id: string): Promise<User | null> {
-    return this.userModel.findByIdAndDelete(id).exec();
+  async updateByUserId(userId: string, user: Partial<User>): Promise<User | null> {
+    return this.userModel.findOneAndUpdate({ userId }, user, { new: true }).exec();
+  }
+
+  async deleteByUserId(userId: string): Promise<User | null> {
+    return this.userModel.findOneAndDelete({ userId }).exec();
   }
 }

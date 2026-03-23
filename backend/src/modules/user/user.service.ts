@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserRepository } from './repositories/user.repository';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -9,7 +11,11 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
-      return await this.userRepository.create(createUserDto);
+      const userToCreate = {
+        ...createUserDto,
+        userId: uuidv4(),
+      };
+      return await this.userRepository.create(userToCreate);
     } catch (error) {
       console.error('Error creating user:', error);
       if (error.code === 11000) {
@@ -23,26 +29,32 @@ export class UserService {
     return this.userRepository.findAll();
   }
 
-  async findOne(id: string): Promise<User> {
-    console.log('Querying user with _id:', id);
-    const user = await this.userRepository.findById(id);
+
+  async findOne(userId: string): Promise<User> {
+    console.log('Querying user with userId:', userId);
+    const user = await this.userRepository.findByUserId(userId);
     console.log('Query result:', user);
+
+    if (!user) {
+      throw new NotFoundException(`User with userId ${userId} not found`);
+    }
     return user;
   }
 
-  async update(id: string, updateUserDto: Partial<User>): Promise<User> {
-    console.log(`Querying user with _id: ${id}`);
+
+  async update(userId: string, updateUserDto: Partial<User>): Promise<User> {
+    console.log(`Querying user with userId: ${userId}`);
     console.log(`Update payload:`, updateUserDto);
-    const updatedUser = await this.userRepository.update(id, updateUserDto);
+    const updatedUser = await this.userRepository.updateByUserId(userId, updateUserDto);
     if (!updatedUser) {
-      console.error(`User with _id: ${id} not found`);
-      throw new Error(`User with id ${id} not found`);
+      console.error(`User with userId: ${userId} not found`);
+      throw new Error(`User with userId ${userId} not found`);
     }
     console.log(`User updated successfully:`, updatedUser);
     return updatedUser;
   }
 
-  async delete(id: string): Promise<User> {
-    return this.userRepository.delete(id);
+  async delete(userId: string): Promise<User> {
+    return this.userRepository.deleteByUserId(userId);
   }
 }
