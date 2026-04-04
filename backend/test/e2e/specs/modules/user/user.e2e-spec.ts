@@ -36,11 +36,13 @@ class UserE2ESpec extends BaseE2ETest {
     expect(typeof user.lastName).toBe('string');
     expect(typeof user.gender).toBe('string');
     expect(typeof user.age).toBe('number');
+    // Do not expect userId in userData (input)
+    expect(userData).not.toHaveProperty('userId');
   }
 
   async testCreateUserMissingFields() {
     const incompleteData = { name: 'Bob' };
-    const response = await request(this.app).post('/users').send(incompleteData);
+    const response = await request(this.app.getHttpServer()).post('/users').send(incompleteData);
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('error');
     expect(typeof response.body.error).toBe('string');
@@ -49,7 +51,7 @@ class UserE2ESpec extends BaseE2ETest {
 
   async testCreateUserInvalidEmail() {
     const invalidEmailData = { name: 'Charlie', email: 'not-an-email', password: 'pass123' };
-    const response = await request(this.app).post('/users').send(invalidEmailData);
+    const response = await request(this.app.getHttpServer()).post('/users').send(invalidEmailData);
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('error');
     expect(typeof response.body.error).toBe('string');
@@ -72,7 +74,7 @@ class UserE2ESpec extends BaseE2ETest {
     const userData = this.userUtils.generateUserData();
     const user = await this.userService.create(userData);
     this.createdUserIds.push(user.userId);
-    const response = await request(this.app).get(`/users/${user.userId}`);
+    const response = await request(this.app.getHttpServer()).get(`/users/${user.userId}`);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('id');
     expect(typeof response.body.id).toBe('string');
@@ -88,6 +90,7 @@ class UserE2ESpec extends BaseE2ETest {
     expect(typeof response.body.age).toBe('number');
     // Only compare userId to user.userId, not userData
     expect(response.body.userId).toBe(user.userId);
+    expect(userData).not.toHaveProperty('userId');
     expect(response.body.firstName).toBe(userData.firstName);
     expect(response.body.lastName).toBe(userData.lastName);
     expect(response.body.gender).toBe(userData.gender);
@@ -95,7 +98,7 @@ class UserE2ESpec extends BaseE2ETest {
   }
 
   async testReturn404ForNonExistentUser() {
-    const response = await request(this.app).get('/users/invalid-id');
+    const response = await request(this.app.getHttpServer()).get('/users/invalid-id');
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty('error');
     expect(typeof response.body.error).toBe('string');
