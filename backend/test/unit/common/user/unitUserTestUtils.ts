@@ -13,6 +13,8 @@ export class UnitUserTestUtils extends BaseUserTestIUtils {
  */
   async createUser(service: UserService, overrides: Partial<CreateUserDto> = {}) {
     const userData = this.generateUserData(overrides);
+    // Add required email if not present
+    if (!userData.email) userData.email = `test_${Math.random().toString(36).substring(2, 8)}@example.com`;
     return await service.create(userData);
   }
 

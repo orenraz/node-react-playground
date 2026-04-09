@@ -31,7 +31,12 @@ export class BaseTest {
     }
 
     await this.initializeApp();
-    return this.getApp();
+    // getApp() can return undefined, but after initializeApp it should be set
+    const app = this.getApp();
+    if (!app) {
+      throw new Error('Nest application failed to initialize');
+    }
+    return app;
   }
 
   protected async initializeApp() {

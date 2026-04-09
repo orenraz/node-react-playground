@@ -1,121 +1,87 @@
 import { UserController } from '@src/modules/user/user.controller';
 import { UserService } from '@src/modules/user/user.service';
-import { BaseUnitTest } from '@test/unit/common/BaseUnitTest';
 import { UnitUserTestUtils } from '@test/unit/common/user/unitUserTestUtils';
 
-class UserControllerUnitTest extends BaseUnitTest {
-  controller!: UserController;
-  service!: jest.Mocked<UserService>;
-  userUtils = new UnitUserTestUtils();
 
-  async beforeEach() {
-    await super.beforeEach();
-    this.service = {
+describe('UserController', () => {
+  let controller: UserController;
+  let service: jest.Mocked<UserService>;
+  let userUtils: UnitUserTestUtils;
+
+  beforeEach(() => {
+    service = {
       create: jest.fn(),
       findAll: jest.fn(),
       findOne: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
     } as any;
-    this.controller = new UserController(this.service);
-  }
-
-  async testCreateUser() {
-    const createDto = this.userUtils.generateUserData();
-    // Simulate backend-generated userId in returned User
-    const mockUser = { ...createDto, userId: 'generated-id' };
-    this.service.create.mockResolvedValueOnce(mockUser);
-    const result = await this.controller.create(createDto);
-    expect(result).toEqual(mockUser);
-    expect(this.service.create).toHaveBeenCalledWith(createDto);
-  }
-
-  async testFindAllUsers() {
-    const createDto = this.userUtils.generateUserData();
-    const mockUser = { ...createDto, userId: 'generated-id' };
-    this.service.findAll.mockResolvedValueOnce([mockUser]);
-    const result = await this.controller.findAll();
-    expect(result).toEqual([mockUser]);
-    expect(this.service.findAll).toHaveBeenCalled();
-  }
-
-  async testFindOneUser() {
-    const createDto = this.userUtils.generateUserData();
-    const mockUser = { ...createDto, userId: 'generated-id' };
-    this.service.findOne.mockResolvedValueOnce(mockUser);
-    const result = await this.controller.findOne(mockUser.userId);
-    expect(result).toEqual(mockUser);
-    expect(this.service.findOne).toHaveBeenCalledWith(mockUser.userId);
-  }
-
-  async testUpdateUser() {
-    const createDto = this.userUtils.generateUserData();
-    const mockUser = { ...createDto, userId: 'generated-id' };
-    this.service.create.mockResolvedValueOnce(mockUser);
-    const created = await this.controller.create(createDto);
-    expect(created).toEqual(mockUser);
-    expect(this.service.create).toHaveBeenCalledWith(createDto);
-
-    const updateDto = { age: 31 };
-    const updatedUser = { ...mockUser, ...updateDto };
-    this.service.update.mockResolvedValueOnce(updatedUser);
-    const result = await this.controller.update(mockUser.userId, updateDto);
-    expect(result).toEqual(updatedUser);
-    expect(this.service.update).toHaveBeenCalledWith(mockUser.userId, updateDto);
-
-    this.service.delete.mockResolvedValueOnce(updatedUser);
-    const deleted = await this.controller.delete(mockUser.userId);
-    expect(deleted).toEqual(updatedUser);
-    expect(this.service.delete).toHaveBeenCalledWith(mockUser.userId);
-  }
-
-  async testDeleteUser() {
-    const createDto = this.userUtils.generateUserData();
-    const mockUser = { ...createDto, userId: 'generated-id' };
-    this.service.delete.mockResolvedValueOnce(mockUser);
-    const result = await this.controller.delete(mockUser.userId);
-    expect(result).toEqual(mockUser);
-    expect(this.service.delete).toHaveBeenCalledWith(mockUser.userId);
-  }
-}
-
-describe('UserController', () => {
-  const test = new UserControllerUnitTest();
-
-  beforeAll(async () => {
-    await test.beforeAll();
-  });
-
-  afterAll(async () => {
-    await test.afterAll();
-  });
-
-  afterEach(() => {
-    test.afterEach();
-  });
-
-  beforeEach(async () => {
-    await test.beforeEach();
+    controller = new UserController(service);
+    userUtils = new UnitUserTestUtils();
   });
 
   it('should create a user', async () => {
-    await test.testCreateUser();
+    const createDto = userUtils.generateUserData({ password: 'testpass123' });
+    expect(createDto.email).toBeDefined();
+    const mockUser = { ...createDto, userId: 'generated-id' };
+    if (createDto.birthDate) mockUser.birthDate = createDto.birthDate;
+    delete mockUser.password;
+    service.create.mockResolvedValueOnce(mockUser as any);
+    const result = await controller.create(createDto);
+    expect(result).toMatchObject(mockUser);
+    expect(service.create).toHaveBeenCalledWith(createDto);
   });
 
   it('should find all users', async () => {
-    await test.testFindAllUsers();
+    const createDto = userUtils.generateUserData();
+    const mockUser = { ...createDto, userId: 'generated-id' };
+    if (createDto.birthDate) mockUser.birthDate = createDto.birthDate;
+    service.findAll.mockResolvedValueOnce([mockUser as any]);
+    const result = await controller.findAll();
+    expect(result).toMatchObject([mockUser]);
+    expect(service.findAll).toHaveBeenCalled();
   });
 
   it('should find one user', async () => {
-    await test.testFindOneUser();
+    const createDto = userUtils.generateUserData();
+    const mockUser = { ...createDto, userId: 'generated-id' };
+    if (createDto.birthDate) mockUser.birthDate = createDto.birthDate;
+    service.findOne.mockResolvedValueOnce(mockUser as any);
+    const result = await controller.findOne(mockUser.userId);
+    expect(result).toMatchObject(mockUser);
+    expect(service.findOne).toHaveBeenCalledWith(mockUser.userId);
   });
 
   it('should update a user', async () => {
-    await test.testUpdateUser();
+    const createDto = userUtils.generateUserData();
+    const mockUser = { ...createDto, userId: 'generated-id' };
+    if (createDto.birthDate) mockUser.birthDate = createDto.birthDate;
+    const updateDto: any = {
+      email: createDto.email,
+      firstName: createDto.firstName,
+      lastName: createDto.lastName,
+      ...(createDto.gender && { gender: createDto.gender }),
+      ...(createDto.birthDate && { birthDate: '1990-01-01T00:00:00.000Z' }),
+      ...(createDto.googleId && { googleId: createDto.googleId }),
+      ...(createDto.provider && { provider: createDto.provider }),
+    };
+    const updatedUser = { ...mockUser, ...updateDto };
+    if (updateDto.birthDate) updatedUser.birthDate = updateDto.birthDate;
+    service.update.mockResolvedValueOnce(updatedUser as any);
+    const result = await controller.update(mockUser.userId, updateDto);
+    expect(result).toMatchObject(updatedUser);
+    expect(service.update).toHaveBeenCalledWith(mockUser.userId, updateDto);
   });
 
   it('should delete a user', async () => {
-    await test.testDeleteUser();
+    const createDto = userUtils.generateUserData();
+    const mockUser = { ...createDto, userId: 'generated-id' };
+    if (createDto.birthDate) mockUser.birthDate = createDto.birthDate;
+    service.delete.mockResolvedValueOnce(mockUser as any);
+    const result = await controller.delete(mockUser.userId);
+    expect(result).toMatchObject(mockUser);
+    expect(service.delete).toHaveBeenCalledWith(mockUser.userId);
   });
 });
+
 

@@ -1,8 +1,9 @@
 import type { Config } from '@jest/types';
 
 const config: Config.InitialOptions = {
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
+  extensionsToTreatAsEsm: ['.ts'],
   roots: ['<rootDir>/test'],
   testRegex: '.*\\.(spec|e2e-spec|e2e)\\.ts$',
   moduleFileExtensions: ['ts', 'js', 'json', 'node'],
@@ -15,6 +16,14 @@ const config: Config.InitialOptions = {
   moduleNameMapper: {
     '^@src/(.*)$': '<rootDir>/src/$1',
     '^@test/(.*)$': '<rootDir>/test/$1',
+  },
+  transformIgnorePatterns: [
+    '/node_modules/(?!(uuid)/)',
+  ],
+  globals: {
+    'ts-jest': {
+      useESM: true,
+    },
   },
 };
 

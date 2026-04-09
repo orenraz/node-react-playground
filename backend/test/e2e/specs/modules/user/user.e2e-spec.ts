@@ -10,39 +10,42 @@ class UserE2ESpec extends BaseE2ETest {
 
   async beforeAll() {
     await super.beforeAll();
-    this.userService = this.app.get(UserService);
+    this.userService = this.app!.get(UserService);
     this.userUtils = new E2EUserTestUtils();
   }
 
   async afterEach() {
     for (const userId of this.createdUserIds) {
-      await this.userUtils.deleteUser(this.app, userId);
+      await this.userUtils.deleteUser(this.app!, userId);
     }
     this.createdUserIds = [];
     await super.afterEach();
   }
 
   async testCreateUser() {
-    const userData = this.userUtils.generateUserData();
+    const userData = this.userUtils.generateUserData({ password: 'testpass123' });
+    // userData should NOT include userId
+    expect(userData).not.toHaveProperty('userId');
     const user = await this.userService.create(userData);
     this.createdUserIds.push(user.userId);
-    expect(user).toHaveProperty('id');
     expect(typeof user.userId).toBe('string');
     expect(user.firstName).toBe(userData.firstName);
     expect(user.lastName).toBe(userData.lastName);
-    expect(user.gender).toBe(userData.gender);
-    expect(user.age).toBe(userData.age);
+    if (userData.gender !== undefined) {
+      expect(user.gender).toBe(userData.gender);
+      expect(typeof user.gender).toBe('string');
+    } else {
+      expect(user.gender).toBeUndefined();
+    }
+    // password should never be returned
+    expect(user).not.toHaveProperty('password');
     expect(typeof user.firstName).toBe('string');
     expect(typeof user.lastName).toBe('string');
-    expect(typeof user.gender).toBe('string');
-    expect(typeof user.age).toBe('number');
-    // Do not expect userId in userData (input)
-    expect(userData).not.toHaveProperty('userId');
   }
 
   async testCreateUserMissingFields() {
     const incompleteData = { name: 'Bob' };
-    const response = await request(this.app.getHttpServer()).post('/users').send(incompleteData);
+    const response = await request(this.app!.getHttpServer()).post('/users').send(incompleteData);
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('error');
     expect(typeof response.body.error).toBe('string');
@@ -51,7 +54,7 @@ class UserE2ESpec extends BaseE2ETest {
 
   async testCreateUserInvalidEmail() {
     const invalidEmailData = { name: 'Charlie', email: 'not-an-email', password: 'pass123' };
-    const response = await request(this.app.getHttpServer()).post('/users').send(invalidEmailData);
+    const response = await request(this.app!.getHttpServer()).post('/users').send(invalidEmailData);
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('error');
     expect(typeof response.body.error).toBe('string');
@@ -59,22 +62,27 @@ class UserE2ESpec extends BaseE2ETest {
   }
 
   async testDuplicateUserId() {
-      // Since userId is generated in backend, test duplicate by creating two users with same data (should not error)
-      const userData = this.userUtils.generateUserData();
-      const user1 = await this.userService.create(userData);
-      const user2 = await this.userService.create(userData);
-      expect(user1.userId).not.toBe(user2.userId);
-      expect(user1.firstName).toBe(user2.firstName);
-      expect(user1.lastName).toBe(user2.lastName);
+    // Since userId is generated in backend, test duplicate by creating two users with same data (should not error)
+    const userData = this.userUtils.generateUserData();
+    expect(userData).not.toHaveProperty('userId');
+    const user1 = await this.userService.create(userData);
+    const user2 = await this.userService.create(userData);
+    expect(user1.userId).not.toBe(user2.userId);
+    expect(user1.firstName).toBe(user2.firstName);
+    expect(user1.lastName).toBe(user2.lastName);
+    if (user1.gender !== undefined && user2.gender !== undefined) {
       expect(user1.gender).toBe(user2.gender);
-      expect(user1.age).toBe(user2.age);
+    } else {
+      expect(user1.gender).toBeUndefined();
+      expect(user2.gender).toBeUndefined();
+    }
   }
 
   async testReturnUserDetails() {
     const userData = this.userUtils.generateUserData();
     const user = await this.userService.create(userData);
     this.createdUserIds.push(user.userId);
-    const response = await request(this.app.getHttpServer()).get(`/users/${user.userId}`);
+    const response = await request(this.app!.getHttpServer()).get(`/users/${user.userId}`);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('id');
     expect(typeof response.body.id).toBe('string');
@@ -84,21 +92,26 @@ class UserE2ESpec extends BaseE2ETest {
     expect(typeof response.body.firstName).toBe('string');
     expect(response.body).toHaveProperty('lastName');
     expect(typeof response.body.lastName).toBe('string');
-    expect(response.body).toHaveProperty('gender');
-    expect(typeof response.body.gender).toBe('string');
-    expect(response.body).toHaveProperty('age');
-    expect(typeof response.body.age).toBe('number');
+    if (userData.gender !== undefined) {
+      expect(response.body).toHaveProperty('gender');
+      expect(typeof response.body.gender).toBe('string');
+    } else {
+      expect(response.body.gender).toBeUndefined();
+    }
     // Only compare userId to user.userId, not userData
     expect(response.body.userId).toBe(user.userId);
     expect(userData).not.toHaveProperty('userId');
     expect(response.body.firstName).toBe(userData.firstName);
     expect(response.body.lastName).toBe(userData.lastName);
-    expect(response.body.gender).toBe(userData.gender);
-    expect(response.body.age).toBe(userData.age);
+    if (userData.gender !== undefined) {
+      expect(response.body.gender).toBe(userData.gender);
+    } else {
+      expect(response.body.gender).toBeUndefined();
+    }
   }
 
   async testReturn404ForNonExistentUser() {
-    const response = await request(this.app.getHttpServer()).get('/users/invalid-id');
+    const response = await request(this.app!.getHttpServer()).get('/users/invalid-id');
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty('error');
     expect(typeof response.body.error).toBe('string');

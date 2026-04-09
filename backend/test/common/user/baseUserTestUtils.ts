@@ -11,16 +11,18 @@ export class BaseUserTestIUtils {
   generateUserData(overrides: Partial<CreateUserDto> = {}): CreateUserDto {
     const uuid = uuidv4();
     const genderValues = Object.values(Gender);
-    const randomGender = genderValues[Math.floor(Math.random() * genderValues.length)];
-    const randomAge = Math.floor(Math.random() * 121); // 0-120 inclusive
-
-    // userId is not part of CreateUserDto anymore
-    const { /* userId, */ ...rest } = overrides;
+    // Only assign gender/birthDate if provided or randomly if not explicitly set to undefined
+    const gender = overrides.hasOwnProperty('gender') ? overrides.gender : genderValues[Math.floor(Math.random() * genderValues.length)];
+    const birthDate = overrides.hasOwnProperty('birthDate') ? overrides.birthDate : new Date(Date.now() - Math.floor(Math.random() * 100 * 365 * 24 * 60 * 60 * 1000)).toISOString();
     return {
-      firstName: rest.firstName ?? `First_Name_${uuid}`,
-      lastName: rest.lastName ?? `Last_Name_${uuid}`,
-      gender: rest.gender ?? randomGender,
-      age: rest.age ?? randomAge,
+      email: overrides.email ?? `user_${uuid}@example.com`,
+      googleId: overrides.googleId,
+      provider: overrides.provider,
+      firstName: overrides.firstName ?? `First_Name_${uuid}`,
+      lastName: overrides.lastName ?? `Last_Name_${uuid}`,
+      ...(gender !== undefined ? { gender } : {}),
+      ...(birthDate !== undefined ? { birthDate } : {}),
+      ...(overrides.password && { password: overrides.password }),
     };
   }
 }

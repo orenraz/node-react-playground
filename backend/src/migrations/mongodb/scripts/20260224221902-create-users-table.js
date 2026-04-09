@@ -14,11 +14,23 @@ module.exports = {
         validator: {
           $jsonSchema: {
             bsonType: 'object',
-            required: ['userId', 'firstName', 'lastName', 'gender', 'age'],
+            required: ['userId', 'email', 'firstName', 'createdAt', 'updatedAt'],
             properties: {
               userId: {
                 bsonType: 'string',
                 description: 'must be a string and is required',
+              },
+              email: {
+                bsonType: 'string',
+                description: 'must be a string and is required',
+              },
+              googleId: {
+                bsonType: 'string',
+                description: 'optional googleId',
+              },
+              provider: {
+                bsonType: 'string',
+                description: 'optional provider',
               },
               firstName: {
                 bsonType: 'string',
@@ -26,17 +38,17 @@ module.exports = {
               },
               lastName: {
                 bsonType: 'string',
-                description: 'must be a string and is required',
+                description: 'optional last name',
               },
               gender: {
                 bsonType: 'string',
-                description: 'must be a string and is required',
+                // IMPORTANT: Keep these values in sync with the Gender enum in src/modules/user/enums/gender.enum.ts
+                enum: ['male', 'female', 'other'],
+                description: 'optional gender, must be one of: male, female, other (from Gender enum)',
               },
-              age: {
-                bsonType: 'int',
-                minimum: 0,
-                maximum: 120,
-                description: 'must be an integer between 0 and 120',
+              birthDate: {
+                bsonType: 'date',
+                description: 'optional birth date',
               },
               createdAt: {
                 bsonType: 'date',

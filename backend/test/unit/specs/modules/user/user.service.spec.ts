@@ -1,118 +1,118 @@
+
+import { toIsoDateString, parseIsoDate } from '@src/utils/date';
 import { UserService } from '@src/modules/user/user.service';
 import { UserRepository } from '@src/modules/user/repositories/user.repository';
-import { CreateUserDto } from '@src/modules/user/dto/create-user.dto';
-import { BaseUnitTest } from '@test/unit/common/BaseUnitTest';
 import { UnitUserTestUtils } from '@test/unit/common/user/unitUserTestUtils';
-
-jest.mock('@src/modules/user/repositories/user.repository');
-
-class UserServiceUnitTest extends BaseUnitTest {
-  service!: UserService;
-  repo!: jest.Mocked<UserRepository>;
-  userUtils = new UnitUserTestUtils();
-
-  async beforeEach() {
-    await super.beforeEach();
-    this.repo = new UserRepository({} as any) as jest.Mocked<UserRepository>;
-    this.service = new UserService(this.repo);
-  }
-
-  async testCreateUser() {
-    const createDto = this.userUtils.generateUserData();
-    const mockUser = { ...createDto, userId: 'generated-id' };
-    this.repo.create.mockResolvedValueOnce(mockUser);
-    const result = await this.service.create(createDto);
-    expect(result).toEqual(mockUser);
-  }
-
-  async testDuplicateUserId() {
-    const createDto = this.userUtils.generateUserData();
-    this.repo.create.mockRejectedValueOnce({ code: 11000 });
-    await expect(this.service.create(createDto)).rejects.toThrow('Duplicate userId detected');
-  }
-
-  async testFindAllUsers() {
-    const createDto = this.userUtils.generateUserData();
-    const mockUser = { ...createDto, userId: 'generated-id' };
-    this.repo.findAll.mockResolvedValueOnce([mockUser]);
-    const result = await this.service.findAll();
-    expect(result).toEqual([mockUser]);
-  }
-
-  async testFindOneUser() {
-    const createDto = this.userUtils.generateUserData();
-    const mockUser = { ...createDto, userId: 'generated-id' };
-    this.repo.findByUserId.mockResolvedValueOnce(mockUser);
-    const result = await this.service.findOne('u1');
-    expect(result).toEqual(mockUser);
-  }
-
-  async testUpdateUser() {
-    const createDto = this.userUtils.generateUserData();
-    const mockUser = { ...createDto, userId: 'generated-id' };
-    this.repo.updateByUserId.mockResolvedValueOnce(mockUser);
-    const result = await this.service.update('u1', { age: 31 });
-    expect(result).toEqual(mockUser);
-  }
-
-  async testUpdateUserNotFound() {
-    this.repo.updateByUserId.mockResolvedValueOnce(undefined);
-    await expect(this.service.update('u1', { age: 31 })).rejects.toThrow('User with userId u1 not found');
-  }
-
-  async testDeleteUser() {
-    const createDto = this.userUtils.generateUserData();
-    const mockUser = { ...createDto, userId: 'generated-id' };
-    this.repo.deleteByUserId.mockResolvedValueOnce(mockUser);
-    const result = await this.service.delete('u1');
-    expect(result).toEqual(mockUser);
-  }
-}
+import { DuplicateUserError } from '@src/modules/user/errors/duplicate-user.error';
 
 describe('UserService', () => {
-  const test = new UserServiceUnitTest();
+  let service: UserService;
+  let repo: jest.Mocked<UserRepository>;
+  let userUtils: UnitUserTestUtils;
 
-  beforeAll(async () => {
-    await test.beforeAll();
-  });
-
-  afterAll(async () => {
-    await test.afterAll();
-  });
-
-  afterEach(() => {
-    test.afterEach();
-  });
-
-  beforeEach(async () => {
-    await test.beforeEach();
+  beforeEach(() => {
+    repo = {
+      create: jest.fn(),
+      findAll: jest.fn(),
+      findByUserId: jest.fn(),
+      updateByUserId: jest.fn(),
+      deleteByUserId: jest.fn(),
+    } as any;
+    service = new UserService(repo);
+    userUtils = new UnitUserTestUtils();
   });
 
   it('should create a user', async () => {
-    await test.testCreateUser();
+    const createDto = userUtils.generateUserData({ password: 'testpass123' });
+    expect(createDto.email).toBeDefined();
+    const mockUser = {
+      ...createDto,
+      userId: 'generated-id',
+      birthDate: createDto.birthDate ? parseIsoDate(createDto.birthDate) : undefined,
+    };
+    delete mockUser.password;
+    repo.create.mockResolvedValueOnce(mockUser);
+    const result = await service.create(createDto);
+    expect(result).toEqual(mockUser);
   });
 
   it('should handle duplicate userId error', async () => {
-    await test.testDuplicateUserId();
+    const createDto = userUtils.generateUserData();
+    repo.create.mockRejectedValueOnce(new DuplicateUserError('Duplicate userId detected'));
+    await expect(service.create(createDto)).rejects.toThrow('Duplicate userId detected');
   });
 
   it('should find all users', async () => {
-    await test.testFindAllUsers();
+    const createDto = userUtils.generateUserData();
+    const mockUser = {
+      ...createDto,
+      userId: 'generated-id',
+      birthDate: createDto.birthDate ? parseIsoDate(createDto.birthDate) : undefined,
+    };
+    repo.findAll.mockResolvedValueOnce([mockUser]);
+    const result = await service.findAll();
+    expect(result).toEqual([mockUser]);
   });
 
   it('should find one user', async () => {
-    await test.testFindOneUser();
+    const createDto = userUtils.generateUserData();
+    const mockUser = {
+      ...createDto,
+      userId: 'generated-id',
+      birthDate: createDto.birthDate ? parseIsoDate(createDto.birthDate) : undefined,
+    };
+    repo.findByUserId.mockResolvedValueOnce(mockUser);
+    const result = await service.findOne('u1');
+    expect(result).toEqual(mockUser);
   });
 
   it('should update a user', async () => {
-    await test.testUpdateUser();
+    const createDto = userUtils.generateUserData();
+    const mockUser: any = {
+      ...createDto,
+      userId: 'generated-id',
+      birthDate: parseIsoDate('1990-01-01T00:00:00.000Z'),
+    };
+    const updateDto: any = {
+      email: createDto.email,
+      firstName: createDto.firstName,
+      lastName: createDto.lastName,
+      ...(createDto.gender && { gender: createDto.gender }),
+      ...(createDto.birthDate && { birthDate: '1990-01-01T00:00:00.000Z' }),
+      ...(createDto.googleId && { googleId: createDto.googleId }),
+      ...(createDto.provider && { provider: createDto.provider }),
+    };
+    repo.updateByUserId.mockResolvedValueOnce(mockUser as any);
+    const result = await service.update('u1', updateDto);
+    expect(result).toEqual(mockUser);
   });
 
   it('should throw if user not found on update', async () => {
-    await test.testUpdateUserNotFound();
+    const createDto = userUtils.generateUserData();
+    const updateDto = {
+      email: createDto.email,
+      firstName: createDto.firstName,
+      lastName: createDto.lastName,
+      gender: createDto.gender,
+      birthDate: '1990-01-01T00:00:00.000Z',
+      ...(createDto.googleId && { googleId: createDto.googleId }),
+      ...(createDto.provider && { provider: createDto.provider }),
+    };
+    repo.updateByUserId.mockResolvedValueOnce(undefined as any);
+    await expect(service.update('u1', updateDto)).rejects.toThrow('User with userId u1 not found');
   });
 
   it('should delete a user', async () => {
-    await test.testDeleteUser();
+    const createDto = userUtils.generateUserData();
+    const mockUser = {
+      ...createDto,
+      userId: 'generated-id',
+      birthDate: createDto.birthDate ? parseIsoDate(createDto.birthDate) : undefined,
+    };
+    repo.deleteByUserId.mockResolvedValueOnce(mockUser);
+    const result = await service.delete('u1');
+    expect(result).toEqual(mockUser);
   });
 });
+
+
