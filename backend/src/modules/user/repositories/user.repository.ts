@@ -34,8 +34,7 @@ export class UserRepository {
   }
 
   async updateByUserId(userId: string, user: Partial<User>): Promise<User> {
-    // Accepts email, googleId, provider, and other fields
-    if (!user.email) throw new Error('Email is required');
+    // Accepts partial updates; email is not required
     try {
       const updated = await this.userModel.findOneAndUpdate({ userId }, user, { new: true }).exec();
       if (!updated) {

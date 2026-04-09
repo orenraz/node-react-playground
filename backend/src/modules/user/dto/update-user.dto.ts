@@ -8,7 +8,8 @@ export class UpdateUserDto {
 
   @IsString()
   @IsEmail()
-  email!: string;
+  @IsOptional()
+  email?: string;
 
   @IsString()
   @IsOptional()
