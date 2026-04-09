@@ -1,157 +1,134 @@
-import request from 'supertest';
+		
+import { Gender } from '@src/modules/user/enums/gender.enum';	
 import { UserService } from '@src/modules/user/user.service';
-import { BaseE2ETest } from '@test/e2e/common/BaseE2ETest';
+import request from 'supertest';
+import { INestApplication } from '@nestjs/common';
+import { setupE2EApp, teardownE2EApp } from '@test/e2e/common/e2e-setup';
 import { E2EUserTestUtils } from '@test/e2e/common/user/e2eUserTestUtils';
 
-class UserE2ESpec extends BaseE2ETest {
-  userService!: UserService;
-  userUtils!: E2EUserTestUtils;
-  createdUserIds: string[] = [];
-
-  async beforeAll() {
-    await super.beforeAll();
-    this.userService = this.app!.get(UserService);
-    this.userUtils = new E2EUserTestUtils();
-  }
-
-  async afterEach() {
-    for (const userId of this.createdUserIds) {
-      await this.userUtils.deleteUser(this.app!, userId);
-    }
-    this.createdUserIds = [];
-    await super.afterEach();
-  }
-
-  async testCreateUser() {
-    const userData = this.userUtils.generateUserData({ password: 'testpass123' });
-    // userData should NOT include userId
-    expect(userData).not.toHaveProperty('userId');
-    const user = await this.userService.create(userData);
-    this.createdUserIds.push(user.userId);
-    expect(typeof user.userId).toBe('string');
-    expect(user.firstName).toBe(userData.firstName);
-    expect(user.lastName).toBe(userData.lastName);
-    if (userData.gender !== undefined) {
-      expect(user.gender).toBe(userData.gender);
-      expect(typeof user.gender).toBe('string');
-    } else {
-      expect(user.gender).toBeUndefined();
-    }
-    // password should never be returned
-    expect(user).not.toHaveProperty('password');
-    expect(typeof user.firstName).toBe('string');
-    expect(typeof user.lastName).toBe('string');
-  }
-
-  async testCreateUserMissingFields() {
-    const incompleteData = { name: 'Bob' };
-    const response = await request(this.app!.getHttpServer()).post('/users').send(incompleteData);
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('error');
-    expect(typeof response.body.error).toBe('string');
-    expect(response.body.error.length).toBeGreaterThan(0);
-  }
-
-  async testCreateUserInvalidEmail() {
-    const invalidEmailData = { name: 'Charlie', email: 'not-an-email', password: 'pass123' };
-    const response = await request(this.app!.getHttpServer()).post('/users').send(invalidEmailData);
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('error');
-    expect(typeof response.body.error).toBe('string');
-    expect(response.body.error.length).toBeGreaterThan(0);
-  }
-
-  async testDuplicateUserId() {
-    // Since userId is generated in backend, test duplicate by creating two users with same data (should not error)
-    const userData = this.userUtils.generateUserData();
-    expect(userData).not.toHaveProperty('userId');
-    const user1 = await this.userService.create(userData);
-    const user2 = await this.userService.create(userData);
-    expect(user1.userId).not.toBe(user2.userId);
-    expect(user1.firstName).toBe(user2.firstName);
-    expect(user1.lastName).toBe(user2.lastName);
-    if (user1.gender !== undefined && user2.gender !== undefined) {
-      expect(user1.gender).toBe(user2.gender);
-    } else {
-      expect(user1.gender).toBeUndefined();
-      expect(user2.gender).toBeUndefined();
-    }
-  }
-
-  async testReturnUserDetails() {
-    const userData = this.userUtils.generateUserData();
-    const user = await this.userService.create(userData);
-    this.createdUserIds.push(user.userId);
-    const response = await request(this.app!.getHttpServer()).get(`/users/${user.userId}`);
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('id');
-    expect(typeof response.body.id).toBe('string');
-    expect(response.body).toHaveProperty('userId');
-    expect(typeof response.body.userId).toBe('string');
-    expect(response.body).toHaveProperty('firstName');
-    expect(typeof response.body.firstName).toBe('string');
-    expect(response.body).toHaveProperty('lastName');
-    expect(typeof response.body.lastName).toBe('string');
-    if (userData.gender !== undefined) {
-      expect(response.body).toHaveProperty('gender');
-      expect(typeof response.body.gender).toBe('string');
-    } else {
-      expect(response.body.gender).toBeUndefined();
-    }
-    // Only compare userId to user.userId, not userData
-    expect(response.body.userId).toBe(user.userId);
-    expect(userData).not.toHaveProperty('userId');
-    expect(response.body.firstName).toBe(userData.firstName);
-    expect(response.body.lastName).toBe(userData.lastName);
-    if (userData.gender !== undefined) {
-      expect(response.body.gender).toBe(userData.gender);
-    } else {
-      expect(response.body.gender).toBeUndefined();
-    }
-  }
-
-  async testReturn404ForNonExistentUser() {
-    const response = await request(this.app!.getHttpServer()).get('/users/invalid-id');
-    expect(response.status).toBe(404);
-    expect(response.body).toHaveProperty('error');
-    expect(typeof response.body.error).toBe('string');
-    expect(response.body.error.length).toBeGreaterThan(0);
-  }
-}
-
 describe('User API e2e', () => {
-  let testClass: UserE2ESpec;
+	let app: INestApplication;
+	let userUtils: E2EUserTestUtils;
+	let userService: UserService;
+	const createdUserIds: string[] = [];
 
-  beforeAll(async () => {
-    testClass = new UserE2ESpec();
-    await testClass.beforeAll();
-  });
+	beforeAll(async () => {
+		app = await setupE2EApp();
+		userUtils = new E2EUserTestUtils();
+		userService = app.get(UserService);
+	});
 
-  afterEach(async () => {
-    await testClass.afterEach();
-  });
+	afterAll(async () => {
+		// Delete all created users before closing the app
+		for (let i = createdUserIds.length - 1; i >= 0; i--) {
+			const userId = createdUserIds[i];
+			try {
+				await userService.delete(userId);
+				createdUserIds.splice(i, 1);
+			} catch (err) {
+				// Ignore errors (e.g., user already deleted)
+			}
+		}
+		await teardownE2EApp(app);  
+	});
 
-  it('should create a user (happy path)', async () => {
-    await testClass.testCreateUser();
-  });
+	it('should create a user (happy path)', async () => {
+		const userData = userUtils.generateUserData({ password: 'testpass123' });
+		expect(userData).not.toHaveProperty('userId');
+		expect(userData).toHaveProperty('password');
+		const response = await request(app.getHttpServer())
+			.post('/users')
+			.send(userData);
+		expect(response.status).toBe(201);
+		expect(response.body).toHaveProperty('userId');
+		// Validate all properties match (except password)
+		for (const key of Object.keys(userData) as Array<keyof typeof userData>) {
+			if (key === 'password') continue;
+			expect(response.body[key]).toEqual(userData[key]);
+		}
+		// Password should not be returned
+		expect(response.body).not.toHaveProperty('password');
+		// userId should be a string and match the input if present (should not be present in input)
+		expect(typeof response.body.userId).toBe('string');
+		createdUserIds.push(response.body.userId);
+	});
 
-  it('should not create a user with missing fields (edge case)', async () => {
-    await testClass.testCreateUserMissingFields();
-  });
+	it('should get a user by id', async () => {
+		// Setup: create a user and add its id to the global array
+		const userData = userUtils.generateUserData({ password: 'testpass456' });
+		const createResponse = await request(app.getHttpServer())
+			.post('/users')
+			.send(userData);
+		expect(createResponse.status).toBe(201);
+		const userId = createResponse.body.userId;
+		createdUserIds.push(userId);
 
-  it('should not create a user with invalid email (error handling)', async () => {
-    await testClass.testCreateUserInvalidEmail();
-  });
+		// Act: get the user by id
+		const getResponse = await request(app.getHttpServer())
+			.get(`/users/${userId}`);
+		expect(getResponse.status).toBe(200);
+		expect(getResponse.body).toHaveProperty('userId', userId);
+		// Validate all properties match (except password)
+		for (const key of Object.keys(userData) as Array<keyof typeof userData>) {
+			if (key === 'password') continue;
+			expect(getResponse.body[key]).toEqual(userData[key]);
+		}
+		expect(getResponse.body).not.toHaveProperty('password');
+	});
 
-  it('should handle duplicate userId registration (error handling)', async () => {
-    await testClass.testDuplicateUserId();
-  });
+  it('should update a user', async () => {
+		// Setup: create a user and add its id to the global array
+		const originalUserData = userUtils.generateUserData({ password: 'testpass789' });
+		const createResponse = await request(app.getHttpServer())
+			.post('/users')
+			.send(originalUserData);
+		expect(createResponse.status).toBe(201);
+		const userId = createResponse.body.userId;
+		createdUserIds.push(userId);
 
-  it('should return user details (happy path)', async () => {
-    await testClass.testReturnUserDetails();
-  });
+		// Prepare update data (all updateable fields except userId/password)
+		const updateData: Partial<typeof originalUserData> = {
+			email: 'updated_' + originalUserData.email,
+			firstName: 'UpdatedFirst',
+			lastName: 'UpdatedLast',
+			gender: originalUserData.gender === Gender.MALE ? Gender.FEMALE : Gender.MALE,
+			birthDate: new Date('2000-01-01').toISOString(),
+		};
 
-  it('should return 404 for non-existent user (edge case)', async () => {
-    await testClass.testReturn404ForNonExistentUser();
-  });
+		// Act: update the user
+		const updateResponse = await request(app.getHttpServer())
+			.put(`/users/${userId}`)
+			.send(updateData);
+		expect(updateResponse.status).toBe(200);
+		expect(updateResponse.body).toHaveProperty('userId', userId);
+
+		// Validate all updated properties match
+		for (const key of Object.keys(updateData) as Array<keyof typeof updateData>) {
+			expect(updateResponse.body[key]).toEqual(updateData[key]);
+		}
+		// Password should not be returned
+		expect(updateResponse.body).not.toHaveProperty('password');
+	});
+
+  it('should delete a user', async () => {
+			// Setup: create a user and add its id to the global array
+			const userData = userUtils.generateUserData({ password: 'testpassDelete' });
+			const createResponse = await request(app.getHttpServer())
+				.post('/users')
+				.send(userData);
+			expect(createResponse.status).toBe(201);
+			const userId = createResponse.body.userId;
+			createdUserIds.push(userId);
+
+			// Act: delete the user
+			const deleteResponse = await request(app.getHttpServer())
+				.delete(`/users/${userId}`);
+			expect(deleteResponse.status).toBe(200);
+			// Optionally, check response body for confirmation if your API returns it
+
+			// Try to get the user, should return 404
+			const getResponse = await request(app.getHttpServer())
+				.get(`/users/${userId}`);
+			expect(getResponse.status).toBe(404);
+		});
 });

@@ -8,7 +8,7 @@ export class E2EUserTestUtils extends BaseUserTestIUtils {
     const userService = app.get(UserService);
     const mockUserData = this.generateUserData(overrides);
     const createdUser = await userService.create(mockUserData);
-    return {createdUser, mockUserData};
+    return { createdUser, mockUserData };
   }
 
   async deleteUser(app: INestApplication, userId: string) {
